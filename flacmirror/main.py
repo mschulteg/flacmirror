@@ -8,7 +8,7 @@ def main():
     argparser = ArgumentParser()
     argparser.add_argument("src_dir")
     argparser.add_argument("dst_dir")
-    argparser.add_argument("--codec", type=str, choices=["ogg", "vorbis"])
+    argparser.add_argument("--codec", type=str, choices=["opus", "vorbis"])
     argparser.add_argument(
         "--albumart", type=str, choices=["optimize", "resize", "keep", "discard"]
     )

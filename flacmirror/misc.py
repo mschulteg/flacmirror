@@ -2,7 +2,7 @@ import struct
 import base64
 
 
-def generate_metadata_block_picture(data: bytes) -> str:
+def generate_metadata_block_picture(data: bytes) -> bytes:
     # assume jpeg tag and empty description, use picturetype 3 for cover(front)
     int_picturetype = 3
     str_mime = b"image/jpeg"
@@ -25,5 +25,9 @@ def generate_metadata_block_picture(data: bytes) -> str:
         int_index,
         len(data),
     )
-    data_base64 = base64.b64encode(header + data).decode()
-    return f"METADATA_BLOCK_PICTURE={data_base64}"
+    return header + data
+
+
+def generate_metadata_block_picture_ogg(data: bytes) -> str:
+    block_picture = generate_metadata_block_picture(data)
+    return base64.b64encode(block_picture).decode()

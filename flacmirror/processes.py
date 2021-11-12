@@ -124,7 +124,7 @@ class Opusenc(Process):
         picture_paths: Optional[Sequence[Path]] = None,
     ):
         args = [
-            "opusenc",
+            self.executable,
             *self.additional_args,
             str(input_f),
             str(output_f),
@@ -135,3 +135,36 @@ class Opusenc(Process):
             for picture in picture_paths:
                 args.extend(["--picture", f"||||{str(picture)}"])
         subprocess.run(args, capture_output=True, check=True)
+
+
+class Oggenc(Process):
+    def __init__(self, quality: Optional[int]):
+        super().__init__("oggenc")
+        self.additional_args: List[str] = []
+        if quality is not None:
+            self.additional_args.extend(["--quality", f"{quality}"])
+
+    def encode(
+        self,
+        input_f: Path,
+        output_f: Path,
+    ):
+        args = [
+            self.executable,
+            *self.additional_args,
+            str(input_f),
+            "-o",
+            str(output_f),
+        ]
+        subprocess.run(args, capture_output=True, check=True)
+
+
+class VorbisComment(Process):
+    def __init__(self):
+        super().__init__("vorbiscomment")
+
+    def add_comment(self, file: Path, key: str, value: str):
+        args = [self.executable, str(file), "-R", "-a"]
+        subprocess.run(
+            args, capture_output=True, check=True, input=f"{key}={value}".encode()
+        )

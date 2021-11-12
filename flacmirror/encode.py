@@ -2,15 +2,28 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from contextlib import ExitStack
 
+from flacmirror.misc import generate_metadata_block_picture_ogg
+
 from .options import Options
 from .processes import (
     ImageMagick,
     Metaflac,
+    Oggenc,
     Opusenc,
+    VorbisComment,
 )
 
 
 def encode_flac(input_f: Path, output_f: Path, options: Options):
+    if options.codec == "opus":
+        encode_flac_to_opus(input_f, output_f, options)
+    elif options.codec == "vorbis":
+        encode_flac_to_vorbis(input_f, output_f, options)
+    else:
+        raise ValueError("Unknown codec")
+
+
+def encode_flac_to_opus(input_f: Path, output_f: Path, options: Options):
     metaflac = Metaflac()
     imagemagick = ImageMagick()
     opusenc = Opusenc(options.opus_quality)
@@ -49,3 +62,24 @@ def encode_flac(input_f: Path, output_f: Path, options: Options):
         else:
             pictures = None
         opusenc.encode(input_f, output_f, discard, pictures)
+
+
+def encode_flac_to_vorbis(input_f: Path, output_f: Path, options: Options):
+    metaflac = Metaflac()
+    imagemagick = ImageMagick()
+    oggenc = Oggenc(options.vorbis_quality)
+    vorbiscomment = VorbisComment()
+    oggenc.encode(input_f, output_f)
+    if options.albumart == "discard":
+        return
+
+    image = metaflac.extract_picture(input_f)
+    if options.albumart == "resize":
+        image = imagemagick.optimize_and_resize_picture(
+            image, options.albumart_max_width
+        )
+    elif options.albumart == "optimize":
+        image = imagemagick.optimize_picture(image)
+
+    block_picture = generate_metadata_block_picture_ogg(image)
+    vorbiscomment.add_comment(output_f, "METADATA_BLOCK_PICTURE", block_picture)
