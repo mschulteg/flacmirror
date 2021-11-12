@@ -13,7 +13,7 @@ from .processes import (
 def encode_flac(input_f: Path, output_f: Path, options: Options):
     metaflac = Metaflac()
     imagemagick = ImageMagick()
-    opusenc = Opusenc()
+    opusenc = Opusenc(options.opus_quality)
     pictures_bytes = None
     discard = False
     if options.albumart == "discard":

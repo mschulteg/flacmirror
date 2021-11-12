@@ -1,6 +1,6 @@
 import subprocess
 from pathlib import Path
-from typing import Optional, Sequence
+from typing import List, Optional, Sequence
 import shutil
 
 
@@ -110,8 +110,11 @@ class ImageMagick(Process):
 
 
 class Opusenc(Process):
-    def __init__(self):
+    def __init__(self, quality: Optional[float]):
         super().__init__("opusenc")
+        self.additional_args: List[str] = []
+        if quality is not None:
+            self.additional_args.extend(["--bitrate", f"{quality}"])
 
     def encode(
         self,
@@ -122,6 +125,7 @@ class Opusenc(Process):
     ):
         args = [
             "opusenc",
+            *self.additional_args,
             str(input_f),
             str(output_f),
         ]
