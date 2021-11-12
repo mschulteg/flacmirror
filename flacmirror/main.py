@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from pathlib import Path
+import signal
 from .queue import JobQueue
 from .options import Options
 
@@ -34,4 +35,10 @@ def main():
         vorbis_quality=arg_results.vorbis_quality,
     )
     job_queue = JobQueue(options)
+    # job_queue.run_singlethreaded()
+
+    def sig_handler(_signum, _frame):
+        job_queue.cancel()
+
+    signal.signal(signal.SIGINT, sig_handler)
     job_queue.run()

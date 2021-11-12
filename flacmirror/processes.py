@@ -2,6 +2,12 @@ import subprocess
 from pathlib import Path
 from typing import List, Optional, Sequence
 import shutil
+import os
+
+
+# We need this so that the child processes do not catch the signals ...
+def preexec_function():
+    os.setpgrp()
 
 
 class Process:
@@ -34,6 +40,7 @@ class FFMPEG(Process):
             ],
             capture_output=True,
             check=True,
+            preexec_fn=preexec_function,
         )
         return results.stdout
 
@@ -53,6 +60,7 @@ class Metaflac(Process):
             ],
             capture_output=True,
             check=True,
+            preexec_fn=preexec_function,
         )
         return results.stdout
 
@@ -81,6 +89,7 @@ class ImageMagick(Process):
             capture_output=True,
             check=True,
             input=data,
+            preexec_fn=preexec_function,
         )
         return results.stdout
 
@@ -105,6 +114,7 @@ class ImageMagick(Process):
             capture_output=True,
             check=True,
             input=data,
+            preexec_fn=preexec_function,
         )
         return results.stdout
 
@@ -134,7 +144,9 @@ class Opusenc(Process):
         if picture_paths is not None:
             for picture in picture_paths:
                 args.extend(["--picture", f"||||{str(picture)}"])
-        subprocess.run(args, capture_output=True, check=True)
+        subprocess.run(
+            args, capture_output=True, check=True, preexec_fn=preexec_function
+        )
 
 
 class Oggenc(Process):
@@ -156,7 +168,9 @@ class Oggenc(Process):
             "-o",
             str(output_f),
         ]
-        subprocess.run(args, capture_output=True, check=True)
+        subprocess.run(
+            args, capture_output=True, check=True, preexec_fn=preexec_function
+        )
 
 
 class VorbisComment(Process):
@@ -166,5 +180,9 @@ class VorbisComment(Process):
     def add_comment(self, file: Path, key: str, value: str):
         args = [self.executable, str(file), "-R", "-a"]
         subprocess.run(
-            args, capture_output=True, check=True, input=f"{key}={value}".encode()
+            args,
+            capture_output=True,
+            check=True,
+            input=f"{key}={value}".encode(),
+            preexec_fn=preexec_function,
         )

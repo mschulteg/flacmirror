@@ -1,7 +1,7 @@
 from subprocess import CalledProcessError
 from typing import List, Tuple
 from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed, CancelledError
 import os
 import shutil
 
@@ -112,6 +112,7 @@ class JobQueue:
     def __init__(self, options: Options):
         self.options = options
         self.jobs, self.jobs_delete = generate_jobs(options)
+        self.futures = []
 
     def run_singlethreaded(self):
         for job in self.jobs:
@@ -137,10 +138,18 @@ class JobQueue:
             num_threads = self.options.num_threads
         else:
             num_threads = os.cpu_count()
+
         with ThreadPoolExecutor(max_workers=num_threads) as e:
-            futures = [e.submit(job.run, self.options) for job in self.jobs]
-            for future in as_completed(futures):
-                future.result()
-        for future in futures:
+            self.futures = [e.submit(job.run, self.options) for job in self.jobs]
+            for future in as_completed(self.futures):
+                try:
+                    future.result()
+                except CancelledError:
+                    pass
+
+    def cancel(self):
+        print("\nReceived SIGINT")
+        print("Stopping pending jobs and finishing running jobs...")
+        for future in self.futures:
             # Cancel still pending Futures if we stop early
             future.cancel()
