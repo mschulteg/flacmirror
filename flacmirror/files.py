@@ -2,19 +2,19 @@ from typing import List, Optional
 from pathlib import Path
 
 
-def get_files(dir: Path) -> List[Path]:
-    files = dir.rglob("*.flac")
+def get_files(directory: Path) -> List[Path]:
+    files = directory.rglob("*.flac")
     files_filtered = [file for file in files if file.is_file()]
     return list(files_filtered)
 
 
 def get_all_files(
-    dir: Path,
+    directory: Path,
     extensions: Optional[List[str]],
     allowed_names: Optional[List[str]] = None,
 ) -> List[Path]:
     # return one list with files to be converted and files to be copied interleaved
-    matches = dir.rglob("*")
+    matches = directory.rglob("*")
     files = [match for match in matches if match.is_file()]
     files_filtered: List[Path] = []
     for file in files:

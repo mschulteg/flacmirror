@@ -33,6 +33,7 @@ class FFMPEG(Process):
                 "-",
             ],
             capture_output=True,
+            check=True,
         )
         return results.stdout
 
@@ -51,6 +52,7 @@ class Metaflac(Process):
                 "-",
             ],
             capture_output=True,
+            check=True,
         )
         return results.stdout
 
@@ -77,6 +79,7 @@ class ImageMagick(Process):
                 "jpeg:-",
             ],
             capture_output=True,
+            check=True,
             input=data,
         )
         return results.stdout
@@ -100,6 +103,7 @@ class ImageMagick(Process):
                 "jpeg:-",
             ],
             capture_output=True,
+            check=True,
             input=data,
         )
         return results.stdout
@@ -111,15 +115,15 @@ class Opusenc(Process):
 
     def encode(
         self,
-        input: Path,
-        output: Path,
+        input_f: Path,
+        output_f: Path,
         discard_pictures: bool = False,
         picture_paths: Optional[Sequence[Path]] = None,
     ):
         args = [
             "opusenc",
-            str(input),
-            str(output),
+            str(input_f),
+            str(output_f),
         ]
         if discard_pictures:
             args.extend(["--discard-pictures"])

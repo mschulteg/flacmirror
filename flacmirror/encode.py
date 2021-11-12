@@ -1,6 +1,4 @@
 from pathlib import Path
-from typing import Sequence, Optional
-import subprocess
 from tempfile import NamedTemporaryFile
 from contextlib import ExitStack
 
@@ -12,7 +10,7 @@ from .processes import (
 )
 
 
-def encode_flac(input: Path, output: Path, options: Options):
+def encode_flac(input_f: Path, output_f: Path, options: Options):
     metaflac = Metaflac()
     imagemagick = ImageMagick()
     opusenc = Opusenc()
@@ -26,9 +24,11 @@ def encode_flac(input: Path, output: Path, options: Options):
     elif options.albumart == "optimize" or options.albumart == "resize":
         discard = True
         pictures = None
-        image = metaflac.extract_picture(input)
+        image = metaflac.extract_picture(input_f)
         if options.albumart == "resize":
-            image = imagemagick.optimize_and_resize_picture(image, 750)
+            image = imagemagick.optimize_and_resize_picture(
+                image, options.albumart_max_width
+            )
         elif options.albumart == "optimize":
             image = imagemagick.optimize_picture(image)
 
@@ -48,4 +48,4 @@ def encode_flac(input: Path, output: Path, options: Options):
             pictures = [Path(tempfile.name) for tempfile in tempfiles]
         else:
             pictures = None
-        opusenc.encode(input, output, discard, pictures)
+        opusenc.encode(input_f, output_f, discard, pictures)

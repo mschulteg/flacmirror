@@ -1,4 +1,3 @@
-from concurrent.futures.thread import ThreadPoolExecutor
 from subprocess import CalledProcessError
 from typing import List, Tuple
 from pathlib import Path
