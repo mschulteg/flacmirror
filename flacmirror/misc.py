@@ -1,6 +1,7 @@
 import struct
 import base64
 
+
 def generate_metadata_block_picture(data: bytes) -> str:
     # assume jpeg tag and empty description, use picturetype 3 for cover(front)
     int_picturetype = 3
