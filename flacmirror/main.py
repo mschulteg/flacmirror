@@ -1,6 +1,8 @@
 from argparse import ArgumentParser
 from pathlib import Path
 import signal
+
+from flacmirror.processes import check_requirements
 from .queue import JobQueue
 from .options import Options
 
@@ -40,6 +42,15 @@ def main():
         print("Please specify a codec")
         print(f"Available codecs are: {codecs}")
         return
+
+    # make sure we have all the programs installed
+    if not check_requirements(options):
+        print(
+            "Not all requirements are met, make sure that tools marked "
+            "as unavailable are installed correctly"
+        )
+        return
+
     job_queue = JobQueue(options)
     # job_queue.run_singlethreaded()
 

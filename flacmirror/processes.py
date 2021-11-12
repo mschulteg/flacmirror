@@ -1,8 +1,10 @@
 import subprocess
 from pathlib import Path
-from typing import List, Optional, Sequence
+from typing import List, Optional, Sequence, Tuple
 import shutil
 import os
+
+from flacmirror.options import Options
 
 
 # We need this so that the child processes do not catch the signals ...
@@ -10,12 +12,39 @@ def preexec_function():
     os.setpgrp()
 
 
+def check_requirements(options: Options) -> bool:
+    print("Checking program requirements:")
+    requirements: List[Process] = [Metaflac()]
+    if options.albumart not in ["discard", "keep"]:
+        requirements.append(ImageMagick())
+    if options.codec == "vorbis":
+        requirements.append(Oggenc(None))
+        if options.albumart != "discard":
+            requirements.append(VorbisComment())
+    elif options.codec == "opus":
+        requirements.append(Opusenc(None))
+
+    fulfilled = True
+    for req in requirements:
+        print(req.executable_info())
+        if not req.available():
+            fulfilled = False
+    return fulfilled
+
+
 class Process:
     def __init__(self, executable: str):
         self.executable = executable
 
-    def check_executable(self):
+    def available(self):
         return shutil.which(self.executable) is not None
+
+    def executable_info(self) -> str:
+        available = "\033[92m" + "availble" + "\033[0m"
+        unavailable = "\033[91m" + "unavailble" + "\033[0m"
+        status = available if self.available() else unavailable
+        message = f"{self.executable} ({shutil.which(self.executable)}) [{status}]"
+        return message
 
 
 class FFMPEG(Process):
