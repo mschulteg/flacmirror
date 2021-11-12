@@ -6,10 +6,11 @@ from .options import Options
 
 
 def main():
+    codecs = ["vorbis", "opus"]
     argparser = ArgumentParser()
     argparser.add_argument("src_dir")
     argparser.add_argument("dst_dir")
-    argparser.add_argument("--codec", type=str, choices=["opus", "vorbis"])
+    argparser.add_argument("--codec", type=str, choices=codecs)
     argparser.add_argument(
         "--albumart", type=str, choices=["optimize", "resize", "keep", "discard"]
     )
@@ -34,6 +35,11 @@ def main():
         opus_quality=arg_results.opus_quality,
         vorbis_quality=arg_results.vorbis_quality,
     )
+
+    if options.codec not in codecs:
+        print("Please specify a codec")
+        print(f"Available codecs are: {codecs}")
+        return
     job_queue = JobQueue(options)
     # job_queue.run_singlethreaded()
 
