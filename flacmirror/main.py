@@ -52,9 +52,9 @@ def main():
         return
 
     job_queue = JobQueue(options)
-    # job_queue.run_singlethreaded()
 
     def sig_handler(_signum, _frame):
+        print("\nReceived SIGINT")
         job_queue.cancel()
 
     signal.signal(signal.SIGINT, sig_handler)

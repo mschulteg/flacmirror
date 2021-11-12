@@ -2,6 +2,7 @@ from subprocess import CalledProcessError
 from typing import List, Tuple
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed, CancelledError
+import traceback
 import os
 import shutil
 
@@ -146,9 +147,22 @@ class JobQueue:
                     future.result()
                 except CancelledError:
                     pass
+                except CalledProcessError as e:
+                    print(f"Error when calling: {e.cmd}")
+                    print(f"Process returned: {e.returncode}")
+                    print(f"stdout:\n{e.stdout}")
+                    print(f"stderr:\n{e.stderr}")
+                    self.cancel()
+                    # do not check all the other futures and print their errors
+                    break
+                except Exception as e:  # pylint: disable=broad-except
+                    print("Error:")
+                    print(traceback.format_exc())
+                    self.cancel()
+                    # do not check all the other futures and print their errors
+                    break
 
     def cancel(self):
-        print("\nReceived SIGINT")
         print("Stopping pending jobs and finishing running jobs...")
         for future in self.futures:
             # Cancel still pending Futures if we stop early
