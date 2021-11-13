@@ -82,19 +82,25 @@ class Metaflac(Process):
     def __init__(self):
         super().__init__("metaflac")
 
-    def extract_picture(self, file: Path) -> bytes:
+    def extract_picture(self, file: Path) -> Optional[bytes]:
         # exctract coverart as jpeg and read it in
-        results = subprocess.run(
-            [
-                self.executable,
-                str(file),
-                "--export-picture-to",
-                "-",
-            ],
-            capture_output=True,
-            check=True,
-            preexec_fn=preexec_function,
-        )
+        try:
+            results = subprocess.run(
+                [
+                    self.executable,
+                    str(file),
+                    "--export-picture-to",
+                    "-",
+                ],
+                capture_output=True,
+                check=True,
+                preexec_fn=preexec_function,
+            )
+        except subprocess.CalledProcessError as e:
+            if b"FLAC file has no PICTURE block" in e.stderr:
+                return None
+            else:
+                raise e from None
         return results.stdout
 
 

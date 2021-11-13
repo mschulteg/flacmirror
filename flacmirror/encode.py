@@ -38,14 +38,18 @@ def encode_flac_to_opus(input_f: Path, output_f: Path, options: Options):
         discard = True
         pictures = None
         image = metaflac.extract_picture(input_f)
-        if options.albumart == "resize":
-            image = imagemagick.optimize_and_resize_picture(
-                image, options.albumart_max_width
-            )
-        elif options.albumart == "optimize":
-            image = imagemagick.optimize_picture(image)
 
-        pictures_bytes = [image]
+        if image is not None:
+            if options.albumart == "resize":
+                image = imagemagick.optimize_and_resize_picture(
+                    image, options.albumart_max_width
+                )
+            elif options.albumart == "optimize":
+                image = imagemagick.optimize_picture(image)
+
+            pictures_bytes = [image]
+        else:
+            discard = False
 
     with ExitStack() as stack:
         if pictures_bytes is not None:
@@ -74,6 +78,8 @@ def encode_flac_to_vorbis(input_f: Path, output_f: Path, options: Options):
         return
 
     image = metaflac.extract_picture(input_f)
+    if image is None:
+        return
     if options.albumart == "resize":
         image = imagemagick.optimize_and_resize_picture(
             image, options.albumart_max_width
