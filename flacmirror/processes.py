@@ -102,7 +102,6 @@ class ImageMagick(Process):
         results = subprocess.run(
             [
                 self.executable,
-                "convert",
                 "-",
                 "-strip",
                 "-interlace",
