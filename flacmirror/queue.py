@@ -125,7 +125,7 @@ class JobQueue:
                 print(f"Marked for deletion: {job.file}")
             while True:
                 inp = input(
-                    "Warning! The following files will be deleted. "
+                    "Warning! The files listed above will be deleted. "
                     "Do you want to proceed? (y/[n]):"
                 )
                 if inp == "y":
