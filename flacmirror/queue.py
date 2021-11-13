@@ -82,7 +82,7 @@ class JobEncode(Job):
 
     def run(self, options: Options):
         self.dst_file.parent.mkdir(parents=True, exist_ok=True)
-        print(f"Encoding {str(self.src_file)}\n    to {str(self.dst_file)}")
+        print(f"Encoding: {str(self.src_file)}\nOutput  : {str(self.dst_file)}")
         encode_flac(self.src_file, self.dst_file, options)
 
 
@@ -146,9 +146,9 @@ class JobQueue:
                     pass
                 except CalledProcessError as e:
                     print(f"\nError when calling: {e.cmd}")
-                    print(f"Process returned: {e.returncode}")
+                    print(f"Process returned code: {e.returncode}")
                     # print(f"stdout:\n{e.stdout}")
-                    print(f"stderr:\n{e.stderr}")
+                    print(f"stderr:\n{e.stderr.decode()}")
                     self.cancel()
                     # do not check all the other futures and print their errors
                     break
