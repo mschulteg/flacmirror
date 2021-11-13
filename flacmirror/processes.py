@@ -14,8 +14,8 @@ def preexec_function():
 
 def check_requirements(options: Options) -> bool:
     print("Checking program requirements:")
-    requirements: List[Process] = [Metaflac()]
-    if options.albumart not in ["discard", "keep"]:
+    requirements: List[Process] = []
+    if options.albumart in ["resize", "optimize"]:
         requirements.append(ImageMagick())
     if options.codec == "vorbis":
         requirements.append(Oggenc(None))
@@ -23,6 +23,10 @@ def check_requirements(options: Options) -> bool:
             requirements.append(VorbisComment())
     elif options.codec == "opus":
         requirements.append(Opusenc(None))
+    if options.codec != "discard" or (
+        options.codec == "vorbis" and options.albumart == "keep"
+    ):
+        requirements.append(Metaflac())
 
     fulfilled = True
     for req in requirements:
