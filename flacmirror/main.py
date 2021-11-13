@@ -36,6 +36,25 @@ def main():
         "--codec", type=str, choices=codecs, help="Specify which target codec to use."
     )
     argparser.add_argument(
+        "--opus-quality",
+        type=float,
+        default=None,
+        help=(
+            "If opus encoding was selected, the bitrate in kbit/s can be specified as a"
+            " float. The value is direclty passed to the --bitrate argument of opusenc."
+        ),
+    )
+    argparser.add_argument(
+        "--vorbis-quality",
+        type=int,
+        default=None,
+        help=(
+            "If vorbis encoding was selected, the quality can be specified as an"
+            " integer between -1 and 10. The value is directly passed to the --quality"
+            " argument of oggenc."
+        ),
+    )
+    argparser.add_argument(
         "--albumart",
         type=str,
         default="optimize",
@@ -91,25 +110,6 @@ def main():
         default=None,
         help=(
             "Number of threads to use. Defaults to the number of threads in the system."
-        ),
-    )
-    argparser.add_argument(
-        "--opus-quality",
-        type=float,
-        default=None,
-        help=(
-            "If opus encoding was selected, the bitrate in kbit/s can be specified as a"
-            " float. The value is direclty passed to the --bitrate argument of opusenc."
-        ),
-    )
-    argparser.add_argument(
-        "--vorbis-quality",
-        type=int,
-        default=None,
-        help=(
-            "If vorbis encoding was selected, the quality can be specified as an"
-            " integer between -1 and 10. The value is directly passed to the --quality"
-            " argument of oggenc."
         ),
     )
     arg_results = argparser.parse_args()
