@@ -82,7 +82,7 @@ class JobEncode(Job):
 
     def run(self, options: Options):
         self.dst_file.parent.mkdir(parents=True, exist_ok=True)
-        print(f"Encoding {str(self.src_file)} to {str(self.dst_file)}")
+        print(f"Encoding {str(self.src_file)}\n    to {str(self.dst_file)}")
         encode_flac(self.src_file, self.dst_file, options)
 
 
@@ -93,7 +93,7 @@ class JobCopy(Job):
 
     def run(self, options: Options):
         self.dst_file.parent.mkdir(parents=True, exist_ok=True)
-        print(f"Copying {str(self.src_file)} to {str(self.dst_file)}")
+        print(f"Copying {str(self.src_file)}\n    to {str(self.dst_file)}")
         shutil.copy(str(self.src_file), str(self.dst_file))
 
 
@@ -145,7 +145,7 @@ class JobQueue:
                 except CancelledError:
                     pass
                 except CalledProcessError as e:
-                    print(f"Error when calling: {e.cmd}")
+                    print(f"\nError when calling: {e.cmd}")
                     print(f"Process returned: {e.returncode}")
                     # print(f"stdout:\n{e.stdout}")
                     print(f"stderr:\n{e.stderr}")
