@@ -1,20 +1,26 @@
 # Information
 `flacmirror` is a cli tool that recursively synchronizes a directory containing flac files
 to another directory while encoding the flac files to a specified format instead of copying them.
+
 This is a side project, you can find more powerful solutions like flac2all on github.
 
 # Dependencies
 ## Python
 
 Python >= 3.6
+
 No libraries required
 
 ## Installed programs
-`metaflac` (required)
-`convert (imagemagick)` (required for --albumart {optimize,resize})
-`oggenc` (required for vorbis encoding)
-`vorbiscomment` (required for vorbis encoding)
-`opusenc` (required for opus encoding)
+- `metaflac` (required)
+
+- `convert (imagemagick)` (required for --albumart {optimize,resize})
+
+- `oggenc` (required for vorbis encoding)
+
+- `vorbiscomment` (required for vorbis encoding)
+
+- `opusenc` (required for opus encoding)
 
 # Usage
 ```
