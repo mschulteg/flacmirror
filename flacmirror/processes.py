@@ -30,9 +30,10 @@ def check_requirements(options: Options) -> bool:
 
     fulfilled = True
     for req in requirements:
-        print(req.executable_info())
+        print(f"    {req.executable_status()}")
         if not req.available():
             fulfilled = False
+            print(f"        {req.executable_info()}")
     return fulfilled
 
 
@@ -43,17 +44,23 @@ class Process:
     def available(self):
         return shutil.which(self.executable) is not None
 
-    def executable_info(self) -> str:
+    def executable_status(self) -> str:
         available = "\033[92m" + "availble" + "\033[0m"
         unavailable = "\033[91m" + "unavailble" + "\033[0m"
         status = available if self.available() else unavailable
         message = f"{self.executable} ({shutil.which(self.executable)}) [{status}]"
         return message
 
+    def executable_info(self) -> str:
+        return ""
+
 
 class FFMPEG(Process):
     def __init__(self):
         super().__init__("ffmpeg")
+
+    def executable_info(self):
+        return 'Can be found on most distros as a package "ffmpeg" '
 
     def extract_picture(self, file: Path) -> bytes:
         # exctract coverart as jpeg and read it in
@@ -82,6 +89,9 @@ class Metaflac(Process):
     def __init__(self):
         super().__init__("metaflac")
 
+    def executable_info(self):
+        return 'Part of the package "flac" on most distros'
+
     def extract_picture(self, file: Path) -> Optional[bytes]:
         # exctract coverart as jpeg and read it in
         try:
@@ -107,6 +117,9 @@ class Metaflac(Process):
 class ImageMagick(Process):
     def __init__(self):
         super().__init__("convert")
+
+    def executable_info(self):
+        return 'Part of the package "imagemagick" on most distros'
 
     def optimize_picture(self, data: bytes) -> bytes:
         results = subprocess.run(
@@ -164,6 +177,9 @@ class Opusenc(Process):
         if quality is not None:
             self.additional_args.extend(["--bitrate", f"{quality}"])
 
+    def executable_info(self):
+        return 'Part of the package "opus-tools" on most distros'
+
     def encode(
         self,
         input_f: Path,
@@ -194,6 +210,9 @@ class Oggenc(Process):
         if quality is not None:
             self.additional_args.extend(["--quality", f"{quality}"])
 
+    def executable_info(self):
+        return 'Part of the package "vorbis-tools" on most distros'
+
     def encode(
         self,
         input_f: Path,
@@ -214,6 +233,9 @@ class Oggenc(Process):
 class VorbisComment(Process):
     def __init__(self):
         super().__init__("vorbiscomment")
+
+    def executable_info(self):
+        return 'Part of the package "vorbis-tools" on most distros'
 
     def add_comment(self, file: Path, key: str, value: str):
         args = [self.executable, str(file), "-R", "-a"]
