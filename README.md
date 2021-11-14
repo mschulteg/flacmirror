@@ -40,11 +40,10 @@ which then should usually be available in your path.
 
 # Usage
 ```
-flacmirror --help
-
 usage: flacmirror [-h] [--codec {vorbis,opus}] [--opus-quality OPUS_QUALITY] [--vorbis-quality VORBIS_QUALITY]
                   [--albumart {optimize,resize,keep,discard}] [--albumart-max-width ALBUMART_MAX_WIDTH]
-                  [--overwrite {all,none,old}] [--delete] [--copy-files COPY_FILES] [--num-threads NUM_THREADS]
+                  [--overwrite {all,none,old}] [--delete] [--yes] [--copy-files COPY_FILES] [--num-threads NUM_THREADS]
+                  [--dry-run] [--version]
                   src_dir dst_dir
 
 Program to recursively synchronize a directory containing flac files to another directory while encoding the flac files
@@ -77,10 +76,13 @@ optional arguments:
                                              and 'old' means that files are only overwritten if the source file has
                                              changed since (the source file's modification date is newer).
   --delete                                   Delete files that exist at the destination but not the source.
+  --yes, -y                                  Skip any prompts that require you to press [y] (--delete)
   --copy-files COPY_FILES                    Copy additional files that are not being encoded. COPY_FILES is a list of
                                              filenames separated by ','. For example --copy-files
                                              "cover.jpg,albumart.jpg"
   --num-threads NUM_THREADS                  Number of threads to use. Defaults to the number of threads in the system.
+  --dry-run                                  Do a dry run (do no copy, encode, delete any file)
+  --version                                  show program's version number and exit
 ```
 
 # Limitations
