@@ -106,13 +106,13 @@ def main():
         help="Skip any prompts that require you to press [y] (--delete)",
     )
     argparser.add_argument(
-        "--copy-files",
+        "--copy-file",
         type=str,
-        default="",
+        action="append",
         help=(
-            "Copy additional files that are not being encoded. COPY_FILES is a list of"
-            " filenames separated by ','. For example --copy-files"
-            ' "cover.jpg,albumart.jpg"'
+            "Copy additional files with filename COPY_FILE that are not being encoded."
+            " This option can be used multiple times. For example --copy-file cover.jpg"
+            " --copy-file album.jpg"
         ),
     )
     argparser.add_argument(
@@ -141,7 +141,7 @@ def main():
         overwrite=arg_results.overwrite,
         delete=arg_results.delete,
         yes=arg_results.yes,
-        copy_files=arg_results.copy_files,
+        copy_file=arg_results.copy_file,
         num_threads=arg_results.num_threads,
         opus_quality=arg_results.opus_quality,
         vorbis_quality=arg_results.vorbis_quality,

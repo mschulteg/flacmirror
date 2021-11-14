@@ -27,12 +27,8 @@ def job_required(src_file: Path, dst_file: Path, options: Options) -> bool:
 
 
 def generate_jobs(options: Options) -> Tuple[List["Job"], List["JobDelete"]]:
-    if options.copy_files:
-        filename_whitelist = options.copy_files.split(",")
-    else:
-        filename_whitelist = None
     src_files = get_all_files(
-        options.src_dir, extensions=[".flac"], allowed_names=filename_whitelist
+        options.src_dir, extensions=[".flac"], allowed_names=options.copy_file
     )
 
     # Keep list of valid dst files even if there is no encode or copy job for them.

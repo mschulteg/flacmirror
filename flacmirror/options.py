@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 
 @dataclass
@@ -13,7 +13,7 @@ class Options:
     overwrite: str
     delete: bool
     yes: bool
-    copy_files: str
+    copy_file: Optional[List[str]]
     num_threads: Optional[int]
     opus_quality: Optional[float]
     vorbis_quality: Optional[int]
