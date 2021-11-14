@@ -16,17 +16,17 @@ def check_requirements(options: Options) -> bool:
     print("Checking program requirements:")
     requirements: List[Process] = []
     if options.albumart in ["resize", "optimize"]:
-        requirements.append(ImageMagick())
+        requirements.append(ImageMagick(False))
     if options.codec == "vorbis":
-        requirements.append(Oggenc(None))
+        requirements.append(Oggenc(None, False))
         if options.albumart != "discard":
-            requirements.append(VorbisComment())
+            requirements.append(VorbisComment(False))
     elif options.codec == "opus":
-        requirements.append(Opusenc(None))
+        requirements.append(Opusenc(None, False))
     if options.codec != "discard" or (
         options.codec == "vorbis" and options.albumart == "keep"
     ):
-        requirements.append(Metaflac())
+        requirements.append(Metaflac(False))
 
     fulfilled = True
     for req in requirements:
@@ -38,8 +38,9 @@ def check_requirements(options: Options) -> bool:
 
 
 class Process:
-    def __init__(self, executable: str):
+    def __init__(self, executable: str, debug: bool = False):
         self.executable = executable
+        self.debug = debug
 
     def available(self):
         return shutil.which(self.executable) is not None
@@ -54,30 +55,36 @@ class Process:
     def executable_info(self) -> str:
         return ""
 
+    def print_debug_info(self, args: List[str]):
+        if self.debug:
+            print(f"Calling process: {args}")
+
 
 class FFMPEG(Process):
-    def __init__(self):
-        super().__init__("ffmpeg")
+    def __init__(self, debug: bool):
+        super().__init__("ffmpeg", debug)
 
     def executable_info(self):
         return 'Can be found on most distros as a package "ffmpeg" '
 
     def extract_picture(self, file: Path) -> bytes:
         # exctract coverart as jpeg and read it in
+        args = [
+            self.executable,
+            "loglevel",
+            "panic",
+            "-i",
+            str(file),
+            "-an",
+            "-c:v",
+            "copy",
+            "-f",
+            "mjpeg",
+            "-",
+        ]
+        self.print_debug_info(args)
         results = subprocess.run(
-            [
-                self.executable,
-                "loglevel",
-                "panic",
-                "-i",
-                str(file),
-                "-an",
-                "-c:v",
-                "copy",
-                "-f",
-                "mjpeg",
-                "-",
-            ],
+            args,
             capture_output=True,
             check=True,
             preexec_fn=preexec_function,
@@ -86,22 +93,25 @@ class FFMPEG(Process):
 
 
 class Metaflac(Process):
-    def __init__(self):
-        super().__init__("metaflac")
+    def __init__(self, debug: bool):
+        super().__init__("metaflac", debug)
 
     def executable_info(self):
         return 'Part of the package "flac" on most distros'
 
     def extract_picture(self, file: Path) -> Optional[bytes]:
         # exctract coverart as jpeg and read it in
+        args = [
+            self.executable,
+            str(file),
+            "--export-picture-to",
+            "-",
+        ]
+
+        self.print_debug_info(args)
         try:
             results = subprocess.run(
-                [
-                    self.executable,
-                    str(file),
-                    "--export-picture-to",
-                    "-",
-                ],
+                args,
                 capture_output=True,
                 check=True,
                 preexec_fn=preexec_function,
@@ -115,28 +125,30 @@ class Metaflac(Process):
 
 
 class ImageMagick(Process):
-    def __init__(self):
-        super().__init__("convert")
+    def __init__(self, debug: bool):
+        super().__init__("convert", debug)
 
     def executable_info(self):
         return 'Part of the package "imagemagick" on most distros'
 
     def optimize_picture(self, data: bytes) -> bytes:
+        args = [
+            self.executable,
+            "-",
+            "-strip",
+            "-interlace",
+            "Plane",
+            "-sampling-factor",
+            "4:2:0",
+            "-colorspace",
+            "RGB",
+            "-quality",
+            "85%",
+            "jpeg:-",
+        ]
+        self.print_debug_info(args)
         results = subprocess.run(
-            [
-                self.executable,
-                "-",
-                "-strip",
-                "-interlace",
-                "Plane",
-                "-sampling-factor",
-                "4:2:0",
-                "-colorspace",
-                "RGB",
-                "-quality",
-                "85%",
-                "jpeg:-",
-            ],
+            args,
             capture_output=True,
             check=True,
             input=data,
@@ -145,23 +157,25 @@ class ImageMagick(Process):
         return results.stdout
 
     def optimize_and_resize_picture(self, data: bytes, max_width: int) -> bytes:
+        args = [
+            self.executable,
+            "-",
+            "-strip",
+            "-resize",
+            f"{max_width}>",
+            "-interlace",
+            "Plane",
+            "-sampling-factor",
+            "4:2:0",
+            "-colorspace",
+            "RGB",
+            "-quality",
+            "85%",
+            "jpeg:-",
+        ]
+        self.print_debug_info(args)
         results = subprocess.run(
-            [
-                self.executable,
-                "-",
-                "-strip",
-                "-resize",
-                f"{max_width}>",
-                "-interlace",
-                "Plane",
-                "-sampling-factor",
-                "4:2:0",
-                "-colorspace",
-                "RGB",
-                "-quality",
-                "85%",
-                "jpeg:-",
-            ],
+            args,
             capture_output=True,
             check=True,
             input=data,
@@ -171,8 +185,8 @@ class ImageMagick(Process):
 
 
 class Opusenc(Process):
-    def __init__(self, quality: Optional[float]):
-        super().__init__("opusenc")
+    def __init__(self, quality: Optional[float], debug: bool):
+        super().__init__("opusenc", debug)
         self.additional_args: List[str] = []
         if quality is not None:
             self.additional_args.extend(["--bitrate", f"{quality}"])
@@ -198,14 +212,15 @@ class Opusenc(Process):
         if picture_paths is not None:
             for picture in picture_paths:
                 args.extend(["--picture", f"||||{str(picture)}"])
+        self.print_debug_info(args)
         subprocess.run(
             args, capture_output=True, check=True, preexec_fn=preexec_function
         )
 
 
 class Oggenc(Process):
-    def __init__(self, quality: Optional[int]):
-        super().__init__("oggenc")
+    def __init__(self, quality: Optional[int], debug: bool):
+        super().__init__("oggenc", debug)
         self.additional_args: List[str] = []
         if quality is not None:
             self.additional_args.extend(["--quality", f"{quality}"])
@@ -225,20 +240,22 @@ class Oggenc(Process):
             "-o",
             str(output_f),
         ]
+        self.print_debug_info(args)
         subprocess.run(
             args, capture_output=True, check=True, preexec_fn=preexec_function
         )
 
 
 class VorbisComment(Process):
-    def __init__(self):
-        super().__init__("vorbiscomment")
+    def __init__(self, debug: bool):
+        super().__init__("vorbiscomment", debug)
 
     def executable_info(self):
         return 'Part of the package "vorbis-tools" on most distros'
 
     def add_comment(self, file: Path, key: str, value: str):
         args = [self.executable, str(file), "-R", "-a"]
+        self.print_debug_info(args)
         subprocess.run(
             args,
             capture_output=True,

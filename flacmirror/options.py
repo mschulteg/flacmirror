@@ -18,3 +18,4 @@ class Options:
     opus_quality: Optional[float]
     vorbis_quality: Optional[int]
     dry_run: bool
+    debug: bool

@@ -24,9 +24,9 @@ def encode_flac(input_f: Path, output_f: Path, options: Options):
 
 
 def encode_flac_to_opus(input_f: Path, output_f: Path, options: Options):
-    metaflac = Metaflac()
-    imagemagick = ImageMagick()
-    opusenc = Opusenc(options.opus_quality)
+    metaflac = Metaflac(options.debug)
+    imagemagick = ImageMagick(options.debug)
+    opusenc = Opusenc(options.opus_quality, options.debug)
     pictures_bytes = None
     discard = False
     if options.albumart == "discard":
@@ -69,10 +69,10 @@ def encode_flac_to_opus(input_f: Path, output_f: Path, options: Options):
 
 
 def encode_flac_to_vorbis(input_f: Path, output_f: Path, options: Options):
-    metaflac = Metaflac()
-    imagemagick = ImageMagick()
-    oggenc = Oggenc(options.vorbis_quality)
-    vorbiscomment = VorbisComment()
+    metaflac = Metaflac(options.debug)
+    imagemagick = ImageMagick(options.debug)
+    oggenc = Oggenc(options.vorbis_quality, options.debug)
+    vorbiscomment = VorbisComment(options.debug)
     oggenc.encode(input_f, output_f)
     if options.albumart == "discard":
         return

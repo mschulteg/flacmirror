@@ -129,6 +129,11 @@ def main():
         help="Do a dry run (do no copy, encode, delete any file)",
     )
     argparser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Give more output about how subcommands are called",
+    )
+    argparser.add_argument(
         "--version", action="version", version=f"%(prog)s {__version__}"
     )
     arg_results = argparser.parse_args()
@@ -146,6 +151,7 @@ def main():
         opus_quality=arg_results.opus_quality,
         vorbis_quality=arg_results.vorbis_quality,
         dry_run=arg_results.dry_run,
+        debug=arg_results.debug,
     )
 
     if options.codec not in codecs:
