@@ -3,6 +3,7 @@ from pathlib import Path
 import signal
 
 from flacmirror.processes import check_requirements
+from . import __version__
 from .queue import JobQueue
 from .options import Options
 
@@ -10,6 +11,7 @@ from .options import Options
 def main():
     codecs = ["vorbis", "opus"]
     argparser = argparse.ArgumentParser(
+        prog="flacmirror",
         description=(
             "Program to recursively synchronize a directory containing flac files to"
             " another directory while encoding the flac files instead of copying them."
@@ -125,6 +127,9 @@ def main():
         "--dry-run",
         action="store_true",
         help="Do a dry run (do no copy, encode, delete any file)",
+    )
+    argparser.add_argument(
+        "--version", action="version", version=f"%(prog)s {__version__}"
     )
     arg_results = argparser.parse_args()
     options = Options(
