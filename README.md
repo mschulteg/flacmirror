@@ -2,7 +2,9 @@
 `flacmirror` is a cli tool that recursively synchronizes a directory containing flac files
 to another directory while encoding the flac files to a specified format instead of copying them.
 
-This is a small project, you can find more powerful solutions like flac2all on github.
+The supported target formats are vorbis and opus.
+
+This is a small side project, you can find more powerful solutions on github like flac2all.
 
 # Dependencies
 ## Python
@@ -24,16 +26,21 @@ No libraries required
 
 # Installation
 
-For now, the easiest way is to clone the project and then call
+For now, the easiest way is to clone the project and install the
+package using pip.
+
 ```bash
 pip clone https://github.com/mschulteg/flacmirror.git
 cd flacmirror
 pip install .
 ```
-from inside the project
+
+This will install the executable `flacmirror` to one of your bin folders (global, user or venv)
+which then should usually be available in your path.
 
 # Usage
 ```
+flacmirror --help
 
 usage: flacmirror [-h] [--codec {vorbis,opus}] [--opus-quality OPUS_QUALITY] [--vorbis-quality VORBIS_QUALITY]
                   [--albumart {optimize,resize,keep,discard}] [--albumart-max-width ALBUMART_MAX_WIDTH]
@@ -75,3 +82,8 @@ optional arguments:
                                              "cover.jpg,albumart.jpg"
   --num-threads NUM_THREADS                  Number of threads to use. Defaults to the number of threads in the system.
 ```
+
+# Limitations
+Currently there are some limitations.
+- Only supported codecs are vorbis and opus
+- Only one album art entries is extracted and then interpreted as TYPE 3: Cover(front) 
