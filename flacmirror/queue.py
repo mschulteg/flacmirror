@@ -60,11 +60,10 @@ def generate_jobs(options: Options) -> Tuple[List["Job"], List["JobDelete"]]:
     jobs_delete = []
     # Get a dst_files list that we can match against src_files
     dst_files_found = get_all_files(options.dst_dir, extensions=None)
-    for bla in dst_files_found:
-        print(bla)
+    dst_files_set = set(bytes(dst_file) for dst_file in dst_files)
     for dst_file_found in dst_files_found:
         # If the found dst_file does not exist in the output list, delete it.
-        if not any(bytes(f) == bytes(dst_file_found) for f in dst_files):
+        if not bytes(dst_file_found) in dst_files_set:
             jobs_delete.append(JobDelete(dst_file_found))
 
     return jobs, jobs_delete
