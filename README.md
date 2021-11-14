@@ -88,4 +88,4 @@ optional arguments:
 # Limitations
 Currently there are some limitations.
 - Only supported codecs are vorbis and opus
-- Only one album art entries is extracted and then interpreted as TYPE 3: Cover(front) 
+- Only one album art entry is extracted and then interpreted as TYPE 3: Cover(front)

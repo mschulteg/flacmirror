@@ -113,6 +113,7 @@ class JobDelete(Job):
 class JobQueue:
     def __init__(self, options: Options):
         self.options = options
+        print("Scanning files and calculating jobs...")
         self.jobs, self.jobs_delete = generate_jobs(options)
         self.futures = []
 
@@ -124,15 +125,18 @@ class JobQueue:
         if self.jobs_delete:
             for job in self.jobs_delete:
                 print(f"Marked for deletion: {job.file}")
-            while True:
-                inp = input(
-                    "Warning! The files listed above will be deleted. "
-                    "Do you want to proceed? (y/[n]):"
-                )
-                if inp == "y":
-                    break
-                elif inp == "n" or inp == "":
-                    return
+            if not self.options.yes:
+                # prompt to ask for permission to delete
+                while True:
+                    inp = input(
+                        "Warning! The files listed above will be deleted. "
+                        "Do you want to proceed? (y/[n]):"
+                    )
+                    if inp == "y":
+                        break
+                    elif inp == "n" or inp == "":
+                        return
+            print("Deleting...")
             for job in self.jobs_delete:
                 job.run(self.options)
 
@@ -141,6 +145,7 @@ class JobQueue:
         else:
             num_threads = os.cpu_count()
 
+        print("Running copy/encode jobs...")
         with ThreadPoolExecutor(max_workers=num_threads) as e:
             self.futures = [e.submit(job.run, self.options) for job in self.jobs]
             for future in as_completed(self.futures):
@@ -162,6 +167,7 @@ class JobQueue:
                     self.cancel()
                     # do not check all the other futures and print their errors
                     break
+        print("All jobs done.")
 
     def cancel(self):
         print("Stopping pending jobs and finishing running jobs...")
