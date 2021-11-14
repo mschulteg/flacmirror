@@ -1,5 +1,6 @@
 import struct
 import base64
+import datetime
 
 
 def generate_metadata_block_picture(data: bytes) -> bytes:
@@ -31,3 +32,15 @@ def generate_metadata_block_picture(data: bytes) -> bytes:
 def generate_metadata_block_picture_ogg(data: bytes) -> str:
     block_picture = generate_metadata_block_picture(data)
     return base64.b64encode(block_picture).decode()
+
+
+def format_date(t: datetime.timedelta) -> str:
+    days = t.days
+    hours, remainder = divmod(t.seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    units = {"days": days, "hours": hours, "minutes": minutes, "seconds": seconds}
+    unit_strs = []
+    for name, value in units.items():
+        if value != 0 or name == "seconds":
+            unit_strs += [f"{value} {name}"]
+    return ", ".join(unit_strs)

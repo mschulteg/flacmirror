@@ -5,6 +5,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed, CancelledError
 import traceback
 import os
 import shutil
+import datetime
+
+from flacmirror.misc import format_date
 
 from .encode import encode_flac
 from .options import Options
@@ -121,6 +124,7 @@ class JobQueue:
             job.run(self.options)
 
     def run(self):
+        start_time = datetime.datetime.now()
         if self.jobs_delete:
             for job in self.jobs_delete:
                 print(f"Marked for deletion: {job.file}")
@@ -166,7 +170,8 @@ class JobQueue:
                     self.cancel()
                     # do not check all the other futures and print their errors
                     break
-        print("All jobs done.")
+        stop_time = datetime.datetime.now()
+        print(f"All jobs done. Took {format_date(stop_time - start_time)}.")
 
     def cancel(self):
         print("Stopping pending jobs and finishing running jobs...")
