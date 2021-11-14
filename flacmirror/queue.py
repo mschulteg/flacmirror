@@ -81,9 +81,10 @@ class JobEncode(Job):
         self.dst_file = dst_file
 
     def run(self, options: Options):
-        self.dst_file.parent.mkdir(parents=True, exist_ok=True)
         print(f"Encoding: {str(self.src_file)}\nOutput  : {str(self.dst_file)}")
-        encode_flac(self.src_file, self.dst_file, options)
+        if not options.dry_run:
+            self.dst_file.parent.mkdir(parents=True, exist_ok=True)
+            encode_flac(self.src_file, self.dst_file, options)
 
 
 class JobCopy(Job):
@@ -92,9 +93,10 @@ class JobCopy(Job):
         self.dst_file = dst_file
 
     def run(self, options: Options):
-        self.dst_file.parent.mkdir(parents=True, exist_ok=True)
         print(f"Copying {str(self.src_file)}\n    to {str(self.dst_file)}")
-        shutil.copy(str(self.src_file), str(self.dst_file))
+        if not options.dry_run:
+            self.dst_file.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(str(self.src_file), str(self.dst_file))
 
 
 class JobDelete(Job):
@@ -104,6 +106,8 @@ class JobDelete(Job):
     def run(self, options: Options):
         assert options.dst_dir.absolute() in self.file.absolute().parents
         print(f"Deleting from dst:{self.file}")
+        if not options.dry_run:
+            self.file.unlink()
 
 
 class JobQueue:

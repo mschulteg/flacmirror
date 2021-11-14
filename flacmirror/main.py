@@ -33,7 +33,10 @@ def main():
         ),
     )
     argparser.add_argument(
-        "--codec", type=str, choices=codecs, help="Specify which target codec to use."
+        "--codec",
+        type=str,
+        choices=codecs,
+        help="Specify which target codec to use.",
     )
     argparser.add_argument(
         "--opus-quality",
@@ -95,6 +98,12 @@ def main():
         help="Delete files that exist at the destination but not the source.",
     )
     argparser.add_argument(
+        "--yes",
+        "-y",
+        action="store_true",
+        help="Skip any prompts that require you to press [y] (--delete)",
+    )
+    argparser.add_argument(
         "--copy-files",
         type=str,
         default="",
@@ -112,6 +121,11 @@ def main():
             "Number of threads to use. Defaults to the number of threads in the system."
         ),
     )
+    argparser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Do a dry run (do no copy, encode, delete any file)",
+    )
     arg_results = argparser.parse_args()
     options = Options(
         src_dir=Path(arg_results.src_dir),
@@ -121,10 +135,12 @@ def main():
         albumart_max_width=arg_results.albumart_max_width,
         overwrite=arg_results.overwrite,
         delete=arg_results.delete,
+        yes=arg_results.yes,
         copy_files=arg_results.copy_files,
         num_threads=arg_results.num_threads,
         opus_quality=arg_results.opus_quality,
         vorbis_quality=arg_results.vorbis_quality,
+        dry_run=arg_results.dry_run,
     )
 
     if options.codec not in codecs:

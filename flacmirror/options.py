@@ -12,7 +12,9 @@ class Options:
     albumart_max_width: int
     overwrite: str
     delete: bool
+    yes: bool
     copy_files: str
     num_threads: Optional[int]
     opus_quality: Optional[float]
     vorbis_quality: Optional[int]
+    dry_run: bool
