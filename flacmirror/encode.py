@@ -32,6 +32,9 @@ def encode_flac_to_opus(input_f: Path, output_f: Path, options: Options):
     if options.albumart == "discard":
         discard = True
     elif options.albumart == "keep":
+        # We do not need to extract the picture and just let opusenc take
+        # them over. This sacrifices a bit of modularity but avoids the
+        # extra step of extracting the picture and then reattaching it.
         discard = False
         pictures = None
     elif options.albumart == "optimize" or options.albumart == "resize":
