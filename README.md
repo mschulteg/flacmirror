@@ -47,8 +47,8 @@ which then should usually be available in your path.
 ```
 usage: flacmirror [-h] [--codec {vorbis,opus}] [--opus-quality OPUS_QUALITY] [--vorbis-quality VORBIS_QUALITY]
                   [--albumart {optimize,resize,keep,discard}] [--albumart-max-width ALBUMART_MAX_WIDTH]
-                  [--overwrite {all,none,old}] [--delete] [--yes] [--copy-file COPY_FILE] [--num-threads NUM_THREADS]
-                  [--dry-run] [--debug] [--version]
+                  [--overwrite {all,none,old}] [--delete] [--yes] [--copy-file COPY_FILE] [--copy-ext COPY_EXT]
+                  [--num-threads NUM_THREADS] [--dry-run] [--debug] [--version]
                   src_dir dst_dir
 
 Program to recursively synchronize a directory containing flac files to another directory while encoding the flac files
@@ -85,6 +85,9 @@ optional arguments:
   --copy-file COPY_FILE                      Copy additional files with filename COPY_FILE that are not being encoded.
                                              This option can be used multiple times. For example --copy-file cover.jpg
                                              --copy-file album.jpg
+  --copy-ext COPY_EXT                        Copy additional files with the extension COPY_EXT that are not being
+                                             encoded. This option can be used multiple times. For example --copy-ext m3u
+                                             --copy-ext log --copy-ext jpg. This will not copy flac files.
   --num-threads NUM_THREADS                  Number of threads to use. Defaults to the number of threads in the system.
   --dry-run                                  Do a dry run (do no copy, encode, delete any file)
   --debug                                    Give more output about how subcommands are called

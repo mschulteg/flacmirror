@@ -116,6 +116,16 @@ def main():
         ),
     )
     argparser.add_argument(
+        "--copy-ext",
+        type=str,
+        action="append",
+        help=(
+            "Copy additional files with the extension COPY_EXT that are not being encoded."
+            " This option can be used multiple times. For example --copy-ext m3u"
+            " --copy-ext log --copy-ext jpg. This will not copy flac files."
+        ),
+    )
+    argparser.add_argument(
         "--num-threads",
         type=int,
         default=None,
@@ -147,6 +157,7 @@ def main():
         delete=arg_results.delete,
         yes=arg_results.yes,
         copy_file=arg_results.copy_file,
+        copy_ext=arg_results.copy_ext,
         num_threads=arg_results.num_threads,
         opus_quality=arg_results.opus_quality,
         vorbis_quality=arg_results.vorbis_quality,

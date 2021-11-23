@@ -14,6 +14,7 @@ class Options:
     delete: bool
     yes: bool
     copy_file: Optional[List[str]]
+    copy_ext: Optional[List[str]]
     num_threads: Optional[int]
     opus_quality: Optional[float]
     vorbis_quality: Optional[int]
