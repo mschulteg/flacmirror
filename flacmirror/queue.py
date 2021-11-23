@@ -27,9 +27,12 @@ def job_required(src_file: Path, dst_file: Path, options: Options) -> bool:
 
 
 def generate_jobs(options: Options) -> Tuple[List["Job"], List["JobDelete"]]:
-    extensions = [".flac"]
+    extensions = ["flac"]
     if options.copy_ext is not None:
-        extensions.extend(options.copy_ext)
+        for ext in options.copy_ext:
+            if ext.startswith("."):
+                ext = ext[1:]
+            extensions.append(ext)
     src_files = get_all_files(
         options.src_dir, extensions=extensions, allowed_names=options.copy_file
     )

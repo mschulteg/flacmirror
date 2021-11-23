@@ -20,7 +20,7 @@ def get_all_files(
     for file in files:
         if extensions is None:
             files_filtered.append(file)
-        elif file.suffix in extensions:
+        elif file.suffix and file.suffix[1:] in extensions:
             files_filtered.append(file)
         elif allowed_names is not None and file.name in allowed_names:
             files_filtered.append(file)
