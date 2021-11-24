@@ -43,6 +43,26 @@ pip install .
 This will install the executable `flacmirror` to one of your bin folders (global, user or venv)
 which then should usually be available in your path.
 
+# Misc
+## Album art optimization
+The option `--albumart optimize` is set by default and will try to convert all albumart
+to stripped and optimized jpeg files.
+This should result in smaller albumart sizes without compromising too much on quality.
+This means that cover art will be extracted from the source flac file and embedded into the output file
+after being piped through the following command, which can currently not be customized.
+
+```bash
+convert - -strip -interlace Plane -sampling-factor 4:2:0 -colorspace sRGB -quality 85% jpeg:-
+```
+
+If the option `--albumart resize` is set , the following command is used to optimize and downscale
+pictures that are wider than `ALBUMART_MAX_WIDTH` pixels, which is specified by `--albumart-max-width`.
+
+```bash
+convert - -strip -interlace Plane -sampling-factor 4:2:0 -colorspace sRGB -resize ${ALBUMART_MAX_WIDTH}\> -quality 85% jpeg:-
+```
+
+
 # Usage
 ```
 usage: flacmirror [-h] [--codec {vorbis,opus}] [--opus-quality OPUS_QUALITY] [--vorbis-quality VORBIS_QUALITY]
