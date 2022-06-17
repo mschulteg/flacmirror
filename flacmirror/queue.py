@@ -36,6 +36,12 @@ def generate_jobs(options: Options) -> Tuple[List["Job"], List["JobDelete"]]:
     src_files = get_all_files(
         options.src_dir, extensions=extensions, allowed_names=options.copy_file
     )
+    # Select output extension depending on which codec is used
+    # .ogg also works for opus but some players don't like that so we just use opus
+    if options.codec == "opus":
+        out_suffix = ".opus"
+    else:
+        out_suffix = ".ogg"
 
     # Keep list of valid dst files even if there is no encode or copy job for them.
     # This list is used to check which files need to be deleted.
@@ -48,7 +54,7 @@ def generate_jobs(options: Options) -> Tuple[List["Job"], List["JobDelete"]]:
         dst_file = generate_output_path(
             base=options.dst_dir.absolute(),
             input_suffix=".flac",
-            suffix=".ogg",
+            suffix=out_suffix,
             file=src_file_relative,
         )
         dst_files.append(dst_file)
