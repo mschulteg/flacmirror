@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.2 - 2022-06-28
+### Fixed
+- Set the correct minimum python version to 3.7 instead of 3.6
+
 ## v0.2.1 - 2022-06-17
 ### Changed
 - Change output file extension from .ogg to .opus for opus encoded files
