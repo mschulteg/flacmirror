@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "flacmirror"
-version = "0.2.2"
+version = "0.2.3"
 description = ""
 authors = ["Moritz Schulte <mschulte.g@gmail.com>"]
 readme = "README.md"
