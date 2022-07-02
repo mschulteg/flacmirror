@@ -1,0 +1,34 @@
+name: CI
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.7"
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: "1.0"
+      - name: View poetry --help
+        run: poetry --help
+      - name: Build
+        run: poetry build
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/flacmirror-*-py3-none-any.whl
+          body: ${{ github.ref_name }}
+      - name: Publish
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          poetry config repositories.test-pypi https://test.pypi.org/legacy/
+          poetry config pypi-token.test-pypi $PYPI_TOKEN
+          poetry publish -r test-pypi
