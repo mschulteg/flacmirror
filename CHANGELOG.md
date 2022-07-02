@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.3 - 2022-07-02
+### Changed
+- Add CI, nothing changed for flactools itself
+
 ## v0.2.2 - 2022-06-28
 ### Fixed
 - Set the correct minimum python version to 3.7 instead of 3.6
