@@ -1,8 +1,8 @@
+import os
+import shutil
 import subprocess
 from pathlib import Path
 from typing import List, Optional, Sequence
-import shutil
-import os
 
 from flacmirror.options import Options
 

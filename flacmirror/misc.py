@@ -1,6 +1,6 @@
-import struct
 import base64
 import datetime
+import struct
 
 
 def generate_metadata_block_picture(data: bytes) -> bytes:

@@ -1,5 +1,5 @@
-from typing import List, Optional
 from pathlib import Path
+from typing import List, Optional
 
 
 def get_files(directory: Path) -> List[Path]:

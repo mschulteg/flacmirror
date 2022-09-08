@@ -1,17 +1,20 @@
-from subprocess import CalledProcessError
-from typing import List, Tuple
-from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor, as_completed, CancelledError
-import traceback
+import datetime
 import os
 import shutil
-import datetime
+import traceback
+from concurrent.futures import CancelledError, ThreadPoolExecutor, as_completed
+from pathlib import Path
+from subprocess import CalledProcessError
+from typing import TYPE_CHECKING, List, Tuple
 
 from flacmirror.misc import format_date
 
 from .encode import encode_flac
+from .files import generate_output_path, get_all_files, source_is_newer
 from .options import Options
-from .files import source_is_newer, get_all_files, generate_output_path
+
+if TYPE_CHECKING:
+    from concurrent.futures import Future
 
 
 def job_required(src_file: Path, dst_file: Path, options: Options) -> bool:
@@ -125,7 +128,7 @@ class JobQueue:
         self.options = options
         print("Scanning files and calculating jobs...")
         self.jobs, self.jobs_delete = generate_jobs(options)
-        self.futures = []
+        self.futures: List["Future[None]"] = []
 
     def run_singlethreaded(self):
         for job in self.jobs:
@@ -157,22 +160,22 @@ class JobQueue:
             num_threads = os.cpu_count()
 
         print("Running copy/encode jobs...")
-        with ThreadPoolExecutor(max_workers=num_threads) as e:
-            self.futures = [e.submit(job.run, self.options) for job in self.jobs]
+        with ThreadPoolExecutor(max_workers=num_threads) as ex:
+            self.futures = [ex.submit(job.run, self.options) for job in self.jobs]
             for future in as_completed(self.futures):
                 try:
                     future.result()
                 except CancelledError:
                     pass
-                except CalledProcessError as e:
-                    print(f"\nError when calling: {e.cmd}")
-                    print(f"Process returned code: {e.returncode}")
+                except CalledProcessError as err:
+                    print(f"\nError when calling: {err.cmd}")
+                    print(f"Process returned code: {err.returncode}")
                     # print(f"stdout:\n{e.stdout}")
-                    print(f"stderr:\n{e.stderr.decode()}")
+                    print(f"stderr:\n{err.stderr.decode()}")
                     self.cancel()
                     # do not check all the other futures and print their errors
                     break
-                except Exception as e:  # pylint: disable=broad-except
+                except Exception:  # pylint: disable=broad-except
                     print("Error:")
                     print(traceback.format_exc())
                     self.cancel()

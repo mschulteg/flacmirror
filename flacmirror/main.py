@@ -1,11 +1,12 @@
 import argparse
-from pathlib import Path
 import signal
+from pathlib import Path
 
 from flacmirror.processes import check_requirements
+
 from . import __version__
-from .queue import JobQueue
 from .options import Options
+from .queue import JobQueue
 
 
 def main():

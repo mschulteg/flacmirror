@@ -1,17 +1,11 @@
+from contextlib import ExitStack
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from contextlib import ExitStack
 
 from flacmirror.misc import generate_metadata_block_picture_ogg
 
 from .options import Options
-from .processes import (
-    ImageMagick,
-    Metaflac,
-    Oggenc,
-    Opusenc,
-    VorbisComment,
-)
+from .processes import ImageMagick, Metaflac, Oggenc, Opusenc, VorbisComment
 
 
 def encode_flac(input_f: Path, output_f: Path, options: Options):
