@@ -1,26 +1,71 @@
-[tool.poetry]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
 name = "flacmirror"
-version = "0.2.3"
-description = ""
-authors = ["Moritz Schulte <mschulte.g@gmail.com>"]
+description = 'Tool for syncing flac files while additionally converting them'
 readme = "README.md"
+requires-python = ">=3.7"
 license = "MIT"
-homepage = "https://github.com/mschulteg/flacmirror"
-repository = "https://github.com/mschulteg/flacmirror"
-classifiers = [
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
+keywords = []
+authors = [
+  { name = "Moritz Schulte", email = "mschulte.g@gmail.com" },
 ]
+classifiers = [
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = []
+dynamic = ["version"]
 
-[tool.poetry.dependencies]
-python = "^3.7"
-
-[tool.poetry.scripts]
+[project.scripts]
 flacmirror = "flacmirror.main:main"
 
-[tool.poetry.dev-dependencies]
-pytest = "^5.2"
+[project.urls]
+Documentation = "https://github.com/mschulteg/flacmirror#readme"
+Issues = "https://github.com/mschulteg/flacmirror/issues"
+Source = "https://github.com/mschulteg/flacmirror"
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.hatch.version]
+path = "flacmirror/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.github",
+]
+[tool.hatch.build.targets.wheel]
+
+[tool.hatch.envs.default]
+dependencies = []
+
+[tool.hatch.envs.lint]
+detached = true
+dependencies = [
+  "black",
+  "isort",
+  "mypy"
+]
+
+[tool.hatch.envs.lint.scripts]
+typing = "mypy ."
+
+style = [
+  "black --check --diff .",
+  "isort --check-only --diff ."
+]
+
+fmt = [
+  "black .",
+  "isort .",
+]
+
+all = [
+  "style",
+  "typing",
+]
