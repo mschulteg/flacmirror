@@ -4,6 +4,7 @@
 ### Changed
 - Fix readme showing wrong python version
 - Switch to using hatch for project management
+- Release on pypi
 
 ### Added
 - Make flacmirror work with the python -m flag
