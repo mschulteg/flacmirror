@@ -67,7 +67,7 @@ convert - -strip -interlace Plane -sampling-factor 4:2:0 -colorspace sRGB -resiz
 ```
 
 
-# Usage
+## Usage
 ```
 usage: flacmirror [-h] [--codec {vorbis,opus}] [--opus-quality OPUS_QUALITY] [--vorbis-quality VORBIS_QUALITY]
                   [--albumart {optimize,resize,keep,discard}] [--albumart-max-width ALBUMART_MAX_WIDTH]
@@ -118,7 +118,7 @@ optional arguments:
   --version                                  show program's version number and exit
 ```
 
-# Limitations
+## Limitations
 Currently there are some limitations.
 - Only supported codecs are vorbis and opus
 - Only one album art entry is extracted and then interpreted as TYPE 3: Cover(front)
