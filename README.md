@@ -9,7 +9,7 @@ This is a small side project, you can find more powerful solutions on github lik
 # Dependencies
 ## Python
 
-Python >= 3.6
+Python >= 3.7
 
 No libraries required
 
