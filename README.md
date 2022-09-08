@@ -1,19 +1,23 @@
-# Information
+# flacmirror
+
+[![PyPI - Version](https://img.shields.io/pypi/v/flacmirror)](https://pypi.org/project/flacmirror/)
+
 `flacmirror` is a cli tool that recursively synchronizes a directory containing flac files
 to another directory while encoding the flac files to a specified format instead of copying them.
 
-The supported target formats are vorbis and opus.
+## Information
 
+The supported target formats are vorbis and opus.
 This is a small side project, you can find more powerful solutions on github like flac2all.
 
-# Dependencies
-## Python
+## Dependencies
+### Python
 
 Python >= 3.7
 
 No libraries required
 
-## Installed programs
+### Installed programs
 - `metaflac` (required)
 
 - `convert (imagemagick)` (required for --albumart {optimize,resize})
@@ -24,7 +28,7 @@ No libraries required
 
 - `opusenc` (required for opus encoding)
 
-# Installation
+## Installation
 
 Download the wheel found under Releases and install it using pip.
 
@@ -43,8 +47,8 @@ pip install .
 This will install the executable `flacmirror` to one of your bin folders (global, user or venv)
 which then should usually be available in your path.
 
-# Misc
-## Album art optimization
+## Misc
+### Album art optimization
 The option `--albumart optimize` is set by default and will try to convert all albumart
 to stripped and optimized jpeg files.
 This should result in smaller albumart sizes without compromising too much on quality.
