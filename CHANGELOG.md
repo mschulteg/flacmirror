@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.4 - 2022-09-08
+### Changed
+- Fix readme showing wrong python version
+- Switch to using hatch for project management
+
+### Added
+- Make flacmirror work with the python -m flag
+
 ## v0.2.3 - 2022-07-02
 ### Changed
 - Add CI, nothing changed for flactools itself
