@@ -2,7 +2,7 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
-from typing import List, Optional, Sequence
+from typing import Dict, List, Optional, Sequence
 
 from flacmirror.options import Options
 
@@ -100,7 +100,7 @@ class Metaflac(Process):
         return 'Part of the package "flac" on most distros'
 
     def extract_picture(self, file: Path) -> Optional[bytes]:
-        # exctract coverart as jpeg and read it in
+        # extract coverart as jpeg and read it in
         args = [
             self.executable,
             str(file),
@@ -122,6 +122,29 @@ class Metaflac(Process):
             else:
                 raise e from None
         return results.stdout
+
+    def extract_tags(self, file: Path) -> Dict[str, str]:
+        # extract tags and return them in a dict
+        args = [
+            self.executable,
+            str(file),
+            "--export-tags-to",
+            "-",
+        ]
+
+        self.print_debug_info(args)
+        results = subprocess.run(
+            args,
+            capture_output=True,
+            check=True,
+            preexec_fn=preexec_function,
+        )
+        tags_raw = results.stdout.decode()
+        tags = {
+            pair[0]: pair[1]
+            for pair in [line.split("=", 1) for line in tags_raw.splitlines()]
+        }
+        return tags
 
 
 class ImageMagick(Process):
