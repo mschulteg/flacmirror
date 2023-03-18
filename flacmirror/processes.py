@@ -14,6 +14,7 @@ def preexec_function():
 
 def check_requirements(options: Options) -> bool:
     print("Checking program requirements:")
+    # TODO: this is a dumb way to check requirements - improve
     requirements: List[Process] = []
     if options.albumart in ["resize", "optimize"]:
         requirements.append(ImageMagick(False))
@@ -23,6 +24,11 @@ def check_requirements(options: Options) -> bool:
             requirements.append(VorbisComment(False))
     elif options.codec == "opus":
         requirements.append(Opusenc(None, False))
+    elif options.codec == "aac":
+        requirements.append(Flac(False))
+        requirements.append(Metaflac(False))
+        requirements.append(Fdkaac(None, None, False))
+        requirements.append(AtomicParsley(False))
     if options.codec != "discard" or (
         options.codec == "vorbis" and options.albumart == "keep"
     ):
