@@ -142,9 +142,9 @@ def main():
         type=str,
         action="append",
         help=(
-            "Copy additional files with the extension COPY_EXT that are not being encoded."
-            " This option can be used multiple times. For example --copy-ext m3u"
-            " --copy-ext log --copy-ext jpg. This will not copy flac files."
+            "Copy additional files with the extension COPY_EXT that are not being"
+            " encoded. This option can be used multiple times. For example --copy-ext"
+            " m3u --copy-ext log --copy-ext jpg. This will not copy flac files."
         ),
     )
     argparser.add_argument(
