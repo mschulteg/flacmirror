@@ -32,6 +32,9 @@ Documentation = "https://github.com/mschulteg/flacmirror#readme"
 Issues = "https://github.com/mschulteg/flacmirror/issues"
 Source = "https://github.com/mschulteg/flacmirror"
 
+[tool.isort]
+profile = "black"
+
 [tool.hatch.version]
 path = "flacmirror/__init__.py"
 

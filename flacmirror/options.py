@@ -18,5 +18,7 @@ class Options:
     num_threads: Optional[int]
     opus_quality: Optional[float]
     vorbis_quality: Optional[int]
+    aac_quality: Optional[int]
+    aac_mode: Optional[int]
     dry_run: bool
     debug: bool

@@ -1,3 +1,4 @@
+import json
 from contextlib import ExitStack
 from pathlib import Path
 from tempfile import NamedTemporaryFile
@@ -5,7 +6,16 @@ from tempfile import NamedTemporaryFile
 from flacmirror.misc import generate_metadata_block_picture_ogg
 
 from .options import Options
-from .processes import ImageMagick, Metaflac, Oggenc, Opusenc, VorbisComment
+from .processes import (
+    AtomicParsley,
+    Fdkaac,
+    Flac,
+    ImageMagick,
+    Metaflac,
+    Oggenc,
+    Opusenc,
+    VorbisComment,
+)
 
 
 def encode_flac(input_f: Path, output_f: Path, options: Options):
@@ -13,6 +23,8 @@ def encode_flac(input_f: Path, output_f: Path, options: Options):
         encode_flac_to_opus(input_f, output_f, options)
     elif options.codec == "vorbis":
         encode_flac_to_vorbis(input_f, output_f, options)
+    elif options.codec == "aac":
+        encode_flac_to_aac(input_f, output_f, options)
     else:
         raise ValueError("Unknown codec")
 
@@ -86,3 +98,39 @@ def encode_flac_to_vorbis(input_f: Path, output_f: Path, options: Options):
 
     block_picture = generate_metadata_block_picture_ogg(image)
     vorbiscomment.add_comment(output_f, "METADATA_BLOCK_PICTURE", block_picture)
+
+
+def encode_flac_to_aac(input_f: Path, output_f: Path, options: Options):
+    metaflac = Metaflac(options.debug)
+    imagemagick = ImageMagick(options.debug)
+    flac = Flac(options.debug)
+    fdkaac = Fdkaac(options.aac_mode, options.aac_quality, options.debug)
+    atomicparsley = AtomicParsley(options.debug)
+
+    # Get tags from flac file. It seems we must use --import-tag-from-json
+    # because passing tags via other options like --tag or --long-tag does
+    # not automaticlly convert the tags to itunes compatible versions.
+    tags = metaflac.extract_tags(input_f)
+    wav_content = flac.decode_to_memory(input_f)
+    with NamedTemporaryFile("w") as tags_file:
+        tags_file.write(json.dumps(tags))
+        tags_file.flush()
+        fdkaac.encode_from_mem(wav_content, output_f, Path(tags_file.name))
+
+    if options.albumart == "discard":
+        return
+
+    image = metaflac.extract_picture(input_f)
+    if image is None:
+        return
+    if options.albumart == "resize":
+        image = imagemagick.optimize_and_resize_picture(
+            image, options.albumart_max_width
+        )
+    elif options.albumart == "optimize":
+        image = imagemagick.optimize_picture(image)
+
+    with NamedTemporaryFile("wb") as image_file:
+        image_file.write(image)
+        image_file.flush()
+        atomicparsley.add_artwork(output_f, Path(image_file.name))

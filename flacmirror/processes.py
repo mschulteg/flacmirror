@@ -286,3 +286,84 @@ class VorbisComment(Process):
             input=f"{key}={value}".encode(),
             preexec_fn=preexec_function,
         )
+
+
+# We need this tool for decoding flac, could also use ffmpeg
+class Flac(Process):
+    def __init__(self, debug: bool):
+        super().__init__("flac", debug)
+
+    def executable_info(self):
+        return 'Available as "fdkaac" on most distros'
+
+    def decode_to_memory(self, input_f: Path) -> bytes:
+        args = [
+            self.executable,
+            "-dc",
+            str(input_f),
+        ]
+        self.print_debug_info(args)
+        results = subprocess.run(
+            args, capture_output=True, check=True, preexec_fn=preexec_function
+        )
+        return results.stdout
+
+
+class Fdkaac(Process):
+    def __init__(
+        self, bitrate_mode: Optional[int], bitrate: Optional[int], debug: bool
+    ):
+        super().__init__("fdkaac", debug)
+        self.additional_args: List[str] = []
+        if bitrate_mode is not None:
+            if bitrate_mode not in range(6):
+                raise ValueError("Invalid bitrate_mode")
+            self.additional_args.extend(["--bitrate-mode", f"{bitrate_mode}"])
+        if bitrate is not None:  # cbr
+            if bitrate_mode in range(1, 6):
+                raise ValueError("Cannot set bitrate for VBR")
+            self.additional_args.extend(["--bitrate", f"{bitrate}"])
+
+    def executable_info(self):
+        return 'Available as "fdkaac" on most distros'
+
+    def encode_from_mem(self, input: bytes, output_f: Path, tags_file: Optional[Path]):
+        args = [
+            self.executable,
+            *self.additional_args,
+            "-",
+            "-o",
+            str(output_f),
+        ]
+        if tags_file is not None:
+            args.append("--tag-from-json")
+            args.append(str(tags_file))
+        self.print_debug_info(args)
+        subprocess.run(
+            args,
+            input=input,
+            capture_output=True,
+            check=True,
+            preexec_fn=preexec_function,
+        )
+
+
+class AtomicParsley(Process):
+    def __init__(self, debug: bool):
+        super().__init__("atomicparsley", debug)
+
+    def executable_info(self):
+        return 'Available as "atomicparsley" on most distros'
+
+    def add_artwork(self, file: Path, artwork: Path):
+        args = [
+            self.executable,
+            str(file),
+            "--artwork",
+            str(artwork),
+            "--overWrite",
+        ]
+        self.print_debug_info(args)
+        subprocess.run(
+            args, capture_output=True, check=True, preexec_fn=preexec_function
+        )

@@ -10,7 +10,7 @@ from .queue import JobQueue
 
 
 def main():
-    codecs = ["vorbis", "opus"]
+    codecs = ["vorbis", "opus", "aac"]
     argparser = argparse.ArgumentParser(
         prog="flacmirror",
         description=(
@@ -47,7 +47,7 @@ def main():
         default=None,
         help=(
             "If opus encoding was selected, the bitrate in kbit/s can be specified as a"
-            " float. The value is direclty passed to the --bitrate argument of opusenc."
+            " float. The value is directly passed to the --bitrate argument of opusenc."
         ),
     )
     argparser.add_argument(
@@ -58,6 +58,27 @@ def main():
             "If vorbis encoding was selected, the quality can be specified as an"
             " integer between -1 and 10. The value is directly passed to the --quality"
             " argument of oggenc."
+        ),
+    )
+    argparser.add_argument(
+        "--aac-quality",
+        type=int,
+        default=None,
+        help=(
+            "If aac encoding was selected and aac-mode was set to 0 (CBR), the bitrate"
+            " in kbit/s can be specified as an integer. The value is directly passed to"
+            " the --bitrate argument of fdkaac."
+        ),
+    )
+    argparser.add_argument(
+        "--aac-mode",
+        type=int,
+        default=None,
+        help=(
+            "If aac encoding was selected, the bitrate configuration mode of fdkaac can"
+            " be specified as an integer from 0 to 5, where 0 means CBR (default) and"
+            " 1-5 means VBR (higher value -> higher bitrate). The value is directly"
+            " passed to the --bitrate-mode argument of fdkaac."
         ),
     )
     argparser.add_argument(
@@ -162,6 +183,8 @@ def main():
         num_threads=arg_results.num_threads,
         opus_quality=arg_results.opus_quality,
         vorbis_quality=arg_results.vorbis_quality,
+        aac_quality=arg_results.aac_quality,
+        aac_mode=arg_results.aac_mode,
         dry_run=arg_results.dry_run,
         debug=arg_results.debug,
     )

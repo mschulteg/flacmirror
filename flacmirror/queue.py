@@ -43,8 +43,10 @@ def generate_jobs(options: Options) -> Tuple[List["Job"], List["JobDelete"]]:
     # .ogg also works for opus but some players don't like that so we just use opus
     if options.codec == "opus":
         out_suffix = ".opus"
-    else:
+    elif options.codec == "vorbis":
         out_suffix = ".ogg"
+    else:  # if options.codec == "aac"
+        out_suffix = ".m4a"
 
     # Keep list of valid dst files even if there is no encode or copy job for them.
     # This list is used to check which files need to be deleted.
