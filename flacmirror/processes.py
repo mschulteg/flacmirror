@@ -2,7 +2,7 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence
+from typing import Dict, List, Optional, Sequence, Tuple
 
 from flacmirror.options import Options
 
@@ -146,11 +146,44 @@ class Metaflac(Process):
             preexec_fn=preexec_function,
         )
         tags_raw = results.stdout.decode()
-        tags = {
-            pair[0]: pair[1]
-            for pair in [line.split("=", 1) for line in tags_raw.splitlines()]
-        }
-        return tags
+        # Workaround since metaflac does not handle multi-line tags well
+        # Newlines in multi-line tags are not escaped so we need to guess if we
+        # actually have the next key pair value or just the next line of the tag.
+        tags: List[Tuple[str, str]] = []
+        line_iter = iter(tags_raw.splitlines(keepends=True))
+        while True:
+            try:
+                line = next(line_iter)
+            except StopIteration:
+                break
+            pair = line.split("=", 1)
+            try:
+                tags.append((pair[0], pair[1]))
+            except IndexError:
+                print(f"Multi-line comment in file {str(file)}: Workaround 2")
+                # Workaround 2
+                # No equal sign, maybe this is the next line of a multi-line tag
+                prev_key, prev_value = tags[-1]
+                # Append this line to the value of the previous line
+                tags[-1] = (prev_key, prev_value + line)
+                continue
+
+            # Workaround 1 - if we are lucky, the multiline tag uses Windows newlines
+            # which means we can distinguish those \r\n from the unix Newlines \n that
+            # come out of Metaflac.
+            while line.endswith("\r\n"):
+                print(f"Multi-line comment in file {str(file)}: Workaround 1")
+                # This seems to be a multiline comment - consume next line too.
+                try:
+                    line = next(line_iter)
+                except StopIteration:
+                    break
+                tags[-1] = (pair[0], pair[1] + line)
+
+        # cleanup newlines and convert to dict
+        tags_dict = {key: value.strip() for key, value in tags}
+
+        return tags_dict
 
 
 class ImageMagick(Process):
