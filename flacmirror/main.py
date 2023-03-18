@@ -67,7 +67,7 @@ def main():
         help=(
             "If aac encoding was selected and aac-mode was set to 0 (CBR), the bitrate"
             " in kbit/s can be specified as an integer. The value is directly passed to"
-            " the --bitrate argument of fdkaac."
+            " the --bitrate argument of fdkaac. Defaults to 128 (kbit/s)."
         ),
     )
     argparser.add_argument(
@@ -193,6 +193,9 @@ def main():
         print("Please specify a codec")
         print(f"Available codecs are: {codecs}")
         return
+
+    if options.codec == "aac" and options.aac_mode not in range(1, 6):
+        options.aac_quality = 128
 
     # make sure we have all the programs installed
     if not check_requirements(options):

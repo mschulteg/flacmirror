@@ -27,7 +27,7 @@ def check_requirements(options: Options) -> bool:
     elif options.codec == "aac":
         requirements.append(Flac(False))
         requirements.append(Metaflac(False))
-        requirements.append(Fdkaac(None, None, False))
+        requirements.append(Fdkaac(1, None, False))
         requirements.append(AtomicParsley(False))
     if options.codec != "discard" or (
         options.codec == "vorbis" and options.albumart == "keep"
@@ -325,10 +325,15 @@ class Fdkaac(Process):
             if bitrate_mode not in range(6):
                 raise ValueError("Invalid bitrate_mode")
             self.additional_args.extend(["--bitrate-mode", f"{bitrate_mode}"])
-        if bitrate is not None:  # cbr
-            if bitrate_mode in range(1, 6):
+        else:
+            bitrate_mode = 0  # default is 0
+        if bitrate is not None:
+            if bitrate_mode in range(1, 6):  # if vbr
                 raise ValueError("Cannot set bitrate for VBR")
             self.additional_args.extend(["--bitrate", f"{bitrate}"])
+        else:  # bitrate not set
+            if bitrate_mode == 0:  # if cbr
+                raise ValueError("Must set bitrate for CBR")
 
     def executable_info(self):
         return 'Available as "fdkaac" on most distros'
