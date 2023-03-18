@@ -89,6 +89,10 @@ class Job:
     def run(self, options: Options):
         pass
 
+    def job_info(self) -> str:
+        """Info that identifies the job in case of error"""
+        return ""
+
 
 class JobEncode(Job):
     def __init__(self, src_file: Path, dst_file: Path):
@@ -100,6 +104,10 @@ class JobEncode(Job):
         if not options.dry_run:
             self.dst_file.parent.mkdir(parents=True, exist_ok=True)
             encode_flac(self.src_file, self.dst_file, options)
+
+    def job_info(self) -> str:
+        """Info that identifies the job in case of error"""
+        return str(self.src_file)
 
 
 class JobCopy(Job):
@@ -113,6 +121,10 @@ class JobCopy(Job):
             self.dst_file.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy(str(self.src_file), str(self.dst_file))
 
+    def job_info(self) -> str:
+        """Info that identifies the job in case of error"""
+        return str(self.src_file)
+
 
 class JobDelete(Job):
     def __init__(self, file: Path):
@@ -123,6 +135,10 @@ class JobDelete(Job):
         print(f"Deleting from dst:{self.file}")
         if not options.dry_run:
             self.file.unlink()
+
+    def job_info(self) -> str:
+        """Info that identifies the job in case of error"""
+        return str(self.file)
 
 
 class JobQueue:
@@ -177,8 +193,9 @@ class JobQueue:
                     self.cancel()
                     # do not check all the other futures and print their errors
                     break
-                except Exception:  # pylint: disable=broad-except
-                    print("Error:")
+                except Exception:
+                    job = self.jobs[self.futures.index(future)]  # lookup job
+                    print(f"\nError processing file {job.job_info()}:")
                     print(traceback.format_exc())
                     self.cancel()
                     # do not check all the other futures and print their errors
