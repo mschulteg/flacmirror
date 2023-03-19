@@ -91,7 +91,10 @@ class FFMPEG(Process):
                 start_new_session=True,
             )
         except subprocess.CalledProcessError as e:
-            if b"Output file does not contain any stream" in e.stderr:
+            if (
+                b"Output file" in e.stderr
+                and b"does not contain any stream" in e.stderr
+            ):
                 return None
             else:
                 raise e from None
