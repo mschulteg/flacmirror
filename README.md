@@ -38,18 +38,16 @@ No libraries required
 
 ## Installation
 
+Install using pip or pipx.
+
+```bash
+pip install flacmirror
+```
+
 Download the wheel found under Releases and install it using pip.
 
 ```bash
 pip install flacmirror-X.X.X-py3-none-any.whl
-```
-
-Or clone the project and install the package using pip.
-
-```bash
-pip clone https://github.com/mschulteg/flacmirror.git
-cd flacmirror
-pip install .
 ```
 
 This will install the executable `flacmirror` to one of your bin folders (global, user or venv)
