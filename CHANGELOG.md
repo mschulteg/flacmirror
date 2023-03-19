@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.0a0 - 2023-03-19
+### Added
+- AAC support (using fdkaac as an encoder)
+
+
 ## v0.2.4 - 2022-09-08
 ### Changed
 - Fix readme showing wrong python version

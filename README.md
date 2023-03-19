@@ -7,8 +7,12 @@ to another directory while encoding the flac files to a specified format instead
 
 ## Information
 
-The supported target formats are vorbis and opus.
-This is a small side project, you can find more powerful solutions on github like flac2all.
+The supported target formats are vorbis, opus and aac (LC profile).
+This is a small side project with limited customizability, you can find more powerful solutions
+on github like flac2all.
+
+Except for quality parameters, flacmirror will not specify any other encoding parameters when calling
+the encoding tools. Therefore most encoding settings will depend on the encoding tools' defaults.
 
 ## Dependencies
 ### Python
@@ -27,6 +31,10 @@ No libraries required
 - `vorbiscomment` (required for vorbis encoding)
 
 - `opusenc` (required for opus encoding)
+
+- `fdkaac` (required for aac encoding)
+
+- `ffmpeg` (required for aac encoding for metadata handling)
 
 ## Installation
 
@@ -86,12 +94,19 @@ positional arguments:
 
 optional arguments:
   -h, --help                                 show this help message and exit
-  --codec {vorbis,opus}                      Specify which target codec to use.
+  --codec {vorbis,opus,aac}                  Specify which target codec to use.
   --opus-quality OPUS_QUALITY                If opus encoding was selected, the bitrate in kbit/s can be specified as a
-                                             float. The value is direclty passed to the --bitrate argument of opusenc.
+                                             float. The value is directly passed to the --bitrate argument of opusenc.
   --vorbis-quality VORBIS_QUALITY            If vorbis encoding was selected, the quality can be specified as an integer
                                              between -1 and 10. The value is directly passed to the --quality argument
                                              of oggenc.
+  --aac-quality AAC_QUALITY                  If aac encoding was selected and aac-mode was set to 0 (CBR), the bitrate
+                                             in kbit/s can be specified as an integer. The value is directly passed to
+                                             the --bitrate argument of fdkaac. Defaults to 128 (kbit/s).
+  --aac-mode AAC_MODE                        If aac encoding was selected, the bitrate configuration mode of fdkaac can
+                                             be specified as an integer from 0 to 5, where 0 means CBR (default) and 1-5
+                                             means VBR (higher value -> higher bitrate). The value is directly passed to
+                                             the --bitrate-mode argument of fdkaac.
   --albumart {optimize,resize,keep,discard}  Specify what to do with album covers. Defaults to 'optimize'. 'optimize'
                                              will try to optimize the picture for better size, while 'resize' will
                                              additionally downsample pictures with a pixel width greater than
@@ -120,5 +135,5 @@ optional arguments:
 
 ## Limitations
 Currently there are some limitations.
-- Only supported codecs are vorbis and opus
+- Only supported codecs are vorbis, opus and aac (LC profile)
 - Only one album art entry is extracted and then interpreted as TYPE 3: Cover(front)
