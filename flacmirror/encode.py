@@ -102,6 +102,7 @@ def encode_flac_to_vorbis(input_f: Path, output_f: Path, options: Options):
 
 
 def encode_flac_to_aac(input_f: Path, output_f: Path, options: Options):
+    metaflac = Metaflac(options.debug)
     imagemagick = ImageMagick(options.debug)
     ffmpeg = FFMPEG(options.debug)
     fdkaac = Fdkaac(options.aac_mode, options.aac_quality, options.debug)
@@ -113,7 +114,7 @@ def encode_flac_to_aac(input_f: Path, output_f: Path, options: Options):
     if options.albumart == "discard":
         return
 
-    image = ffmpeg.extract_picture(input_f)
+    image = metaflac.extract_picture(input_f)
     if image is None:
         return
     if options.albumart == "resize":
