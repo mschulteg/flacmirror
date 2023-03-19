@@ -7,7 +7,7 @@ to another directory while encoding the flac files to a specified format instead
 
 ## Information
 
-The supported target formats are vorbis, opus and aac (LC profile).
+The supported target formats are vorbis, opus, mp3 (lame) and aac (LC profile).
 This is a small side project with limited customizability, you can find more powerful solutions
 on github like flac2all.
 
@@ -34,7 +34,7 @@ No libraries required
 
 - `fdkaac` (required for aac encoding)
 
-- `ffmpeg` (required for aac encoding for metadata handling)
+- `ffmpeg` (required for mp3 encoding and aac metadata handling)
 
 ## Installation
 
@@ -94,19 +94,26 @@ positional arguments:
 
 optional arguments:
   -h, --help                                 show this help message and exit
-  --codec {vorbis,opus,aac}                  Specify which target codec to use.
-  --opus-quality OPUS_QUALITY                If opus encoding was selected, the bitrate in kbit/s can be specified as a
+  --codec {vorbis,opus,aac,mp3}              Specify which target codec to use.
+  --opus-quality OPUS_QUALITY                If opus encoding is selected, the bitrate in kbit/s can be specified as a
                                              float. The value is directly passed to the --bitrate argument of opusenc.
-  --vorbis-quality VORBIS_QUALITY            If vorbis encoding was selected, the quality can be specified as an integer
+  --vorbis-quality VORBIS_QUALITY            If vorbis encoding is selected, the quality can be specified as an integer
                                              between -1 and 10. The value is directly passed to the --quality argument
                                              of oggenc.
-  --aac-quality AAC_QUALITY                  If aac encoding was selected and aac-mode was set to 0 (CBR), the bitrate
-                                             in kbit/s can be specified as an integer. The value is directly passed to
-                                             the --bitrate argument of fdkaac. Defaults to 128 (kbit/s).
-  --aac-mode AAC_MODE                        If aac encoding was selected, the bitrate configuration mode of fdkaac can
+  --aac-quality AAC_QUALITY                  If aac encoding is selected and aac-mode is set to 0 (CBR), the bitrate in
+                                             kbit/s can be specified as an integer. The value is directly passed to the
+                                             --bitrate argument of fdkaac. Defaults to 128 (kbit/s).
+  --aac-mode AAC_MODE                        If aac encoding is selected, the bitrate configuration mode of fdkaac can
                                              be specified as an integer from 0 to 5, where 0 means CBR (default) and 1-5
                                              means VBR (higher value -> higher bitrate). The value is directly passed to
                                              the --bitrate-mode argument of fdkaac.
+  --mp3-quality MP3_QUALITY                  If mp3 encoding is selected and --mp3-mode is set to cbr or abr, this sets
+                                             the bitrate in kbit/s as an integer from 8 to 320. If --mp3-mode is set to
+                                             vbr, this sets the quality level integer from 0 to 9 (like the V of lame or
+                                             q:a settings of ffmpeg).
+  --mp3-mode {vbr,cbr,abr}                   If mp3 encoding is selected, this specified the quality mode to be used. If
+                                             specified, --mp3-quality must also be set to a valid value. If not
+                                             specified, ffmpeg will use default values for mode and quality.
   --albumart {optimize,resize,keep,discard}  Specify what to do with album covers. Defaults to 'optimize'. 'optimize'
                                              will try to optimize the picture for better size, while 'resize' will
                                              additionally downsample pictures with a pixel width greater than
@@ -135,5 +142,5 @@ optional arguments:
 
 ## Limitations
 Currently there are some limitations.
-- Only supported codecs are vorbis, opus and aac (LC profile)
 - Only one album art entry is extracted and then interpreted as TYPE 3: Cover(front)
+- Additional encoding parameters can not be specified
