@@ -23,6 +23,8 @@ def check_requirements(options: Options) -> bool:
         requirements.append(FFMPEG(False))
         requirements.append(Fdkaac(1, None, False))
         requirements.append(AtomicParsley(False))
+    elif options.codec == "mp3":
+        requirements.append(FFMPEG(False))
     if options.codec != "discard" or (
         options.codec == "vorbis" and options.albumart == "keep"
     ):
