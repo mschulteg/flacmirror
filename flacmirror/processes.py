@@ -7,11 +7,6 @@ from typing import Dict, List, Optional, Sequence, Tuple
 from flacmirror.options import Options
 
 
-# We need this so that the child processes do not catch the signals ...
-def preexec_function():
-    os.setpgrp()
-
-
 def check_requirements(options: Options) -> bool:
     print("Checking program requirements:")
     # TODO: this is a dumb way to check requirements - improve
@@ -145,7 +140,7 @@ class Metaflac(Process):
                 args,
                 capture_output=True,
                 check=True,
-                preexec_fn=preexec_function,
+                start_new_session=True,
             )
         except subprocess.CalledProcessError as e:
             if b"FLAC file has no PICTURE block" in e.stderr:
@@ -168,7 +163,7 @@ class Metaflac(Process):
             args,
             capture_output=True,
             check=True,
-            preexec_fn=preexec_function,
+            start_new_session=True,
         )
         tags_raw = results.stdout.decode()
         # Workaround since metaflac does not handle multi-line tags well
@@ -239,7 +234,7 @@ class ImageMagick(Process):
             capture_output=True,
             check=True,
             input=data,
-            preexec_fn=preexec_function,
+            start_new_session=True,
         )
         return results.stdout
 
@@ -266,7 +261,7 @@ class ImageMagick(Process):
             capture_output=True,
             check=True,
             input=data,
-            preexec_fn=preexec_function,
+            start_new_session=True,
         )
         return results.stdout
 
@@ -301,7 +296,10 @@ class Opusenc(Process):
                 args.extend(["--picture", f"||||{str(picture)}"])
         self.print_debug_info(args)
         subprocess.run(
-            args, capture_output=True, check=True, preexec_fn=preexec_function
+            args,
+            capture_output=True,
+            check=True,
+            start_new_session=True,
         )
 
 
@@ -329,7 +327,10 @@ class Oggenc(Process):
         ]
         self.print_debug_info(args)
         subprocess.run(
-            args, capture_output=True, check=True, preexec_fn=preexec_function
+            args,
+            capture_output=True,
+            check=True,
+            start_new_session=True,
         )
 
 
@@ -348,7 +349,7 @@ class VorbisComment(Process):
             capture_output=True,
             check=True,
             input=f"{key}={value}".encode(),
-            preexec_fn=preexec_function,
+            start_new_session=True,
         )
 
 
@@ -368,7 +369,10 @@ class Flac(Process):
         ]
         self.print_debug_info(args)
         results = subprocess.run(
-            args, capture_output=True, check=True, preexec_fn=preexec_function
+            args,
+            capture_output=True,
+            check=True,
+            start_new_session=True,
         )
         return results.stdout
 
@@ -413,7 +417,7 @@ class Fdkaac(Process):
             input=input,
             capture_output=True,
             check=True,
-            preexec_fn=preexec_function,
+            start_new_session=True,
         )
 
 
@@ -434,5 +438,8 @@ class AtomicParsley(Process):
         ]
         self.print_debug_info(args)
         subprocess.run(
-            args, capture_output=True, check=True, preexec_fn=preexec_function
+            args,
+            capture_output=True,
+            check=True,
+            start_new_session=True,
         )
