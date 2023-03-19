@@ -20,5 +20,7 @@ class Options:
     vorbis_quality: Optional[int]
     aac_quality: Optional[int]
     aac_mode: Optional[int]
+    mp3_quality: Optional[int]
+    mp3_mode: Optional[str]
     dry_run: bool
     debug: bool

@@ -38,6 +38,8 @@ def check_requirements(options: Options) -> bool:
 
 
 class Process:
+    # TODO: Setting encoding options (see other Process classes) in the constructor
+    # is not really optimal; change.
     def __init__(self, executable: str, debug: bool = False):
         self.executable = executable
         self.debug = debug
@@ -101,7 +103,7 @@ class FFMPEG(Process):
                 raise e from None
         return results.stdout
 
-    def flac_to_caf(self, file: Path) -> bytes:
+    def encode_caf(self, file: Path) -> bytes:
         args = [
             self.executable,
             "-loglevel",
@@ -116,6 +118,62 @@ class FFMPEG(Process):
         self.print_debug_info(args)
         results = subprocess.run(
             args,
+            capture_output=True,
+            check=True,
+            start_new_session=True,
+        )
+        return results.stdout
+
+    def encode_lame(
+        self,
+        input_f: Path,
+        output_f: Path,
+        image: Optional[bytes],
+        discard: bool,
+        mode: Optional[str],
+        quality: Optional[int],
+    ) -> bytes:
+        if mode is not None and quality is None:
+            raise ValueError("If mode is specified, quality must also be specified.")
+        args = [
+            self.executable,
+            "-loglevel",
+            "warning",
+            "-nostdin",
+            "-i",
+            str(input_f),
+        ]
+        args_keep = ["-map", "0", "-c:v", "copy"]
+        args_image = ["-i", "pipe:", "-map", "0:a", "-map", "1:v", "-c:v", "copy"]
+        args_discard = ["-map", "0:a"]
+        args_lame = ["-map_metadata", "0", "-id3v2_version", "3"]
+        args_quality = []
+        if mode == "cbr" or mode == "abr":
+            if mode == "abr":
+                args_quality.append("-abr")
+                args_quality.append("1")
+            # cbr goes from 8 to 320?
+            args_quality.append("-b:a")
+            args_quality.append(f"{quality}k")
+        elif mode == "vbr":
+            # vbr goes from 0 to 9
+            args_quality.append("-q:a")
+            args_quality.append(f"{quality}")
+
+        if image is not None:
+            args.extend(args_image)
+        elif discard:
+            args.extend(args_discard)
+        else:
+            args.extend(args_keep)
+        args.extend(args_lame)
+        args.extend(args_quality)
+        args.append(str(output_f))
+
+        self.print_debug_info(args)
+        results = subprocess.run(
+            args,
+            input=image,
             capture_output=True,
             check=True,
             start_new_session=True,

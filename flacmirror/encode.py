@@ -1,4 +1,3 @@
-import json
 from contextlib import ExitStack
 from pathlib import Path
 from tempfile import NamedTemporaryFile
@@ -10,7 +9,6 @@ from .processes import (
     FFMPEG,
     AtomicParsley,
     Fdkaac,
-    Flac,
     ImageMagick,
     Metaflac,
     Oggenc,
@@ -26,6 +24,8 @@ def encode_flac(input_f: Path, output_f: Path, options: Options):
         encode_flac_to_vorbis(input_f, output_f, options)
     elif options.codec == "aac":
         encode_flac_to_aac(input_f, output_f, options)
+    elif options.codec == "mp3":
+        encode_flac_to_mp3(input_f, output_f, options)
     else:
         raise ValueError("Unknown codec")
 
@@ -108,7 +108,7 @@ def encode_flac_to_aac(input_f: Path, output_f: Path, options: Options):
     fdkaac = Fdkaac(options.aac_mode, options.aac_quality, options.debug)
     atomicparsley = AtomicParsley(options.debug)
 
-    wav_content = ffmpeg.flac_to_caf(input_f)
+    wav_content = ffmpeg.encode_caf(input_f)
     fdkaac.encode_from_mem(wav_content, output_f, None)
 
     if options.albumart == "discard":
@@ -128,3 +128,35 @@ def encode_flac_to_aac(input_f: Path, output_f: Path, options: Options):
         image_file.write(image)
         image_file.flush()
         atomicparsley.add_artwork(output_f, Path(image_file.name))
+
+
+def encode_flac_to_mp3(input_f: Path, output_f: Path, options: Options):
+    metaflac = Metaflac(options.debug)
+    imagemagick = ImageMagick(options.debug)
+    ffmpeg = FFMPEG(options.debug)
+    discard = False
+    image = None
+    if options.albumart == "discard":
+        discard = True
+    elif options.albumart == "keep":
+        # We do not need to extract the picture and just let opusenc take
+        # them over. This sacrifices a bit of modularity but avoids the
+        # extra step of extracting the picture and then reattaching it.
+        discard = False
+    elif options.albumart == "optimize" or options.albumart == "resize":
+        discard = True
+        image = metaflac.extract_picture(input_f)
+
+        if image is not None:
+            if options.albumart == "resize":
+                image = imagemagick.optimize_and_resize_picture(
+                    image, options.albumart_max_width
+                )
+            elif options.albumart == "optimize":
+                image = imagemagick.optimize_picture(image)
+        else:
+            discard = False
+
+        ffmpeg.encode_lame(
+            input_f, output_f, image, discard, options.mp3_mode, options.mp3_quality
+        )

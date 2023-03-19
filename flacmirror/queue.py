@@ -45,8 +45,10 @@ def generate_jobs(options: Options) -> Tuple[List["Job"], List["JobDelete"]]:
         out_suffix = ".opus"
     elif options.codec == "vorbis":
         out_suffix = ".ogg"
-    else:  # if options.codec == "aac"
+    elif options.codec == ".m4a":
         out_suffix = ".m4a"
+    else:  # if options.codec == "mp3"
+        out_suffix = ".mp3"
 
     # Keep list of valid dst files even if there is no encode or copy job for them.
     # This list is used to check which files need to be deleted.

@@ -10,7 +10,7 @@ from .queue import JobQueue
 
 
 def main():
-    codecs = ["vorbis", "opus", "aac"]
+    codecs = ["vorbis", "opus", "aac", "mp3"]
     argparser = argparse.ArgumentParser(
         prog="flacmirror",
         description=(
@@ -46,7 +46,7 @@ def main():
         type=float,
         default=None,
         help=(
-            "If opus encoding was selected, the bitrate in kbit/s can be specified as a"
+            "If opus encoding is selected, the bitrate in kbit/s can be specified as a"
             " float. The value is directly passed to the --bitrate argument of opusenc."
         ),
     )
@@ -55,7 +55,7 @@ def main():
         type=int,
         default=None,
         help=(
-            "If vorbis encoding was selected, the quality can be specified as an"
+            "If vorbis encoding is selected, the quality can be specified as an"
             " integer between -1 and 10. The value is directly passed to the --quality"
             " argument of oggenc."
         ),
@@ -65,7 +65,7 @@ def main():
         type=int,
         default=None,
         help=(
-            "If aac encoding was selected and aac-mode was set to 0 (CBR), the bitrate"
+            "If aac encoding is selected and aac-mode is set to 0 (CBR), the bitrate"
             " in kbit/s can be specified as an integer. The value is directly passed to"
             " the --bitrate argument of fdkaac. Defaults to 128 (kbit/s)."
         ),
@@ -75,10 +75,32 @@ def main():
         type=int,
         default=None,
         help=(
-            "If aac encoding was selected, the bitrate configuration mode of fdkaac can"
+            "If aac encoding is selected, the bitrate configuration mode of fdkaac can"
             " be specified as an integer from 0 to 5, where 0 means CBR (default) and"
             " 1-5 means VBR (higher value -> higher bitrate). The value is directly"
             " passed to the --bitrate-mode argument of fdkaac."
+        ),
+    )
+    argparser.add_argument(
+        "--mp3-quality",
+        type=int,
+        default=None,
+        help=(
+            "If mp3 encoding is selected and --mp3-mode is set to cbr or abr, this"
+            " sets the bitrate in kbit/s as an integer from 8 to 320. If --mp3-mode"
+            " is set to vbr, this sets the quality level integer from 0 to 9"
+            " (like the V of lame or q:a settings of ffmpeg)."
+        ),
+    )
+    argparser.add_argument(
+        "--mp3-mode",
+        type=str,
+        default=None,
+        choices=["vbr", "cbr", "abr"],
+        help=(
+            "If mp3 encoding is selected, this specified the quality mode to be used."
+            " If specified, --mp3-quality must also be set to a valid value. If not"
+            " specified, ffmpeg will use default values for mode and quality."
         ),
     )
     argparser.add_argument(
@@ -185,6 +207,8 @@ def main():
         vorbis_quality=arg_results.vorbis_quality,
         aac_quality=arg_results.aac_quality,
         aac_mode=arg_results.aac_mode,
+        mp3_quality=arg_results.mp3_quality,
+        mp3_mode=arg_results.mp3_mode,
         dry_run=arg_results.dry_run,
         debug=arg_results.debug,
     )
@@ -197,11 +221,16 @@ def main():
     if options.codec == "aac" and options.aac_mode not in range(1, 6):
         options.aac_quality = 128
 
+    if options.codec == "mp3" and options.mp3_mode is not None:
+        if options.mp3_quality is None:
+            print("--mp3-quality must be specified.")
+            return
+
     # make sure we have all the programs installed
     if not check_requirements(options):
         print(
             "Not all requirements are met, make sure that tools marked "
-            "as unavailable are installed correctly"
+            "as unavailable are installed correctly."
         )
         return
 
