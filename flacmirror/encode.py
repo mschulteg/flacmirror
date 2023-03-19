@@ -157,6 +157,6 @@ def encode_flac_to_mp3(input_f: Path, output_f: Path, options: Options):
         else:
             discard = False
 
-        ffmpeg.encode_lame(
-            input_f, output_f, image, discard, options.mp3_mode, options.mp3_quality
-        )
+    ffmpeg.encode_lame(
+        input_f, output_f, image, discard, options.mp3_mode, options.mp3_quality
+    )
