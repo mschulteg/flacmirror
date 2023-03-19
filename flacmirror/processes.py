@@ -25,8 +25,7 @@ def check_requirements(options: Options) -> bool:
     elif options.codec == "opus":
         requirements.append(Opusenc(None, False))
     elif options.codec == "aac":
-        requirements.append(Flac(False))
-        requirements.append(Metaflac(False))
+        requirements.append(FFMPEG(False))
         requirements.append(Fdkaac(1, None, False))
         requirements.append(AtomicParsley(False))
     if options.codec != "discard" or (
@@ -73,12 +72,12 @@ class FFMPEG(Process):
     def executable_info(self):
         return 'Can be found on most distros as a package "ffmpeg" '
 
-    def extract_picture(self, file: Path) -> bytes:
-        # exctract coverart as jpeg and read it in
+    def extract_picture(self, file: Path) -> Optional[bytes]:
+        """exctract coverart into memory (this will keep PNGs as PNGs)"""
         args = [
             self.executable,
-            "loglevel",
-            "panic",
+            "-loglevel",
+            "warning",
             "-i",
             str(file),
             "-an",
@@ -89,11 +88,37 @@ class FFMPEG(Process):
             "-",
         ]
         self.print_debug_info(args)
+        try:
+            results = subprocess.run(
+                args,
+                capture_output=True,
+                check=True,
+                start_new_session=True,
+            )
+        except subprocess.CalledProcessError as e:
+            if b"Output file does not contain any stream" in e.stderr:
+                return None
+            else:
+                raise e from None
+        return results.stdout
+
+    def flac_to_caf(self, file: Path) -> bytes:
+        args = [
+            self.executable,
+            "-loglevel",
+            "warning",
+            "-i",
+            str(file),
+            "-f",
+            "caf",
+            "-",
+        ]
+        self.print_debug_info(args)
         results = subprocess.run(
             args,
             capture_output=True,
             check=True,
-            preexec_fn=preexec_function,
+            start_new_session=True,
         )
         return results.stdout
 

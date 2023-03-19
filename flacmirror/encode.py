@@ -7,6 +7,7 @@ from flacmirror.misc import generate_metadata_block_picture_ogg
 
 from .options import Options
 from .processes import (
+    FFMPEG,
     AtomicParsley,
     Fdkaac,
     Flac,
@@ -101,26 +102,18 @@ def encode_flac_to_vorbis(input_f: Path, output_f: Path, options: Options):
 
 
 def encode_flac_to_aac(input_f: Path, output_f: Path, options: Options):
-    metaflac = Metaflac(options.debug)
     imagemagick = ImageMagick(options.debug)
-    flac = Flac(options.debug)
+    ffmpeg = FFMPEG(options.debug)
     fdkaac = Fdkaac(options.aac_mode, options.aac_quality, options.debug)
     atomicparsley = AtomicParsley(options.debug)
 
-    # Get tags from flac file. It seems we must use --import-tag-from-json
-    # because passing tags via other options like --tag or --long-tag does
-    # not automaticlly convert the tags to itunes compatible versions.
-    tags = metaflac.extract_tags(input_f)
-    wav_content = flac.decode_to_memory(input_f)
-    with NamedTemporaryFile("w") as tags_file:
-        tags_file.write(json.dumps(tags))
-        tags_file.flush()
-        fdkaac.encode_from_mem(wav_content, output_f, Path(tags_file.name))
+    wav_content = ffmpeg.flac_to_caf(input_f)
+    fdkaac.encode_from_mem(wav_content, output_f, None)
 
     if options.albumart == "discard":
         return
 
-    image = metaflac.extract_picture(input_f)
+    image = ffmpeg.extract_picture(input_f)
     if image is None:
         return
     if options.albumart == "resize":
