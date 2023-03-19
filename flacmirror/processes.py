@@ -424,6 +424,8 @@ class Fdkaac(Process):
 class AtomicParsley(Process):
     def __init__(self, debug: bool):
         super().__init__("atomicparsley", debug)
+        if not self.available():
+            self.executable = "AtomicParsley"
 
     def executable_info(self):
         return 'Available as "atomicparsley" on most distros'
