@@ -146,7 +146,18 @@ class FFMPEG(Process):
             str(input_f),
         ]
         args_keep = ["-map", "0", "-c:v", "copy"]
-        args_image = ["-i", "pipe:", "-map", "0:a", "-map", "1:v", "-c:v", "copy"]
+        args_image = [
+            "-i",
+            "pipe:",
+            "-map",
+            "0:a",
+            "-map",
+            "1:v",
+            "-c:v",
+            "copy",
+            "-metadata:s:v",
+            "comment=Cover (front)",
+        ]
         args_discard = ["-map", "0:a"]
         args_lame = ["-map_metadata", "0", "-id3v2_version", "3"]
         args_quality = []
