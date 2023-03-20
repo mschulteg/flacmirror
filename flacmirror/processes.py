@@ -140,6 +140,7 @@ class FFMPEG(Process):
             raise ValueError("If mode is specified, quality must also be specified.")
         args = [
             self.executable,
+            "-y",
             "-loglevel",
             self.loglevel,
             "-nostdin",
