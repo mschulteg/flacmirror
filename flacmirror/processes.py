@@ -67,6 +67,7 @@ class Process:
 class FFMPEG(Process):
     def __init__(self, debug: bool):
         super().__init__("ffmpeg", debug)
+        self.loglevel = "info" if debug else "warning"
 
     def executable_info(self):
         return 'Can be found on most distros as a package "ffmpeg" '
@@ -76,7 +77,7 @@ class FFMPEG(Process):
         args = [
             self.executable,
             "-loglevel",
-            "warning",
+            self.loglevel,
             "-nostdin",
             "-i",
             str(file),
@@ -109,7 +110,7 @@ class FFMPEG(Process):
         args = [
             self.executable,
             "-loglevel",
-            "warning",
+            self.loglevel,
             "-nostdin",
             "-i",
             str(file),
@@ -140,7 +141,7 @@ class FFMPEG(Process):
         args = [
             self.executable,
             "-loglevel",
-            "warning",
+            self.loglevel,
             "-nostdin",
             "-i",
             str(input_f),
