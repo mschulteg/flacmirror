@@ -22,6 +22,7 @@ Python >= 3.7
 No libraries required
 
 ### Installed programs
+
 - `metaflac` (required)
 
 - `convert (imagemagick)` (required for --albumart {optimize,resize})
@@ -55,6 +56,7 @@ which then should usually be available in your path.
 
 ## Misc
 ### Album art optimization
+
 The option `--albumart optimize` is set by default and will try to convert all albumart
 to stripped and optimized jpeg files.
 This should result in smaller albumart sizes without compromising too much on quality.
@@ -74,6 +76,7 @@ convert - -strip -interlace Plane -sampling-factor 4:2:0 -colorspace sRGB -resiz
 
 
 ## Usage
+
 ```
 usage: flacmirror [-h] [--codec {vorbis,opus}] [--opus-quality OPUS_QUALITY] [--vorbis-quality VORBIS_QUALITY]
                   [--albumart {optimize,resize,keep,discard}] [--albumart-max-width ALBUMART_MAX_WIDTH]
@@ -139,6 +142,7 @@ optional arguments:
 ```
 
 ## Limitations
+
 Currently there are some limitations.
 - Only one album art entry is extracted and then interpreted as TYPE 3: Cover(front)
 - Additional encoding parameters can not be specified

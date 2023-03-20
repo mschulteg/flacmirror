@@ -45,7 +45,7 @@ def generate_jobs(options: Options) -> Tuple[List["Job"], List["JobDelete"]]:
         out_suffix = ".opus"
     elif options.codec == "vorbis":
         out_suffix = ".ogg"
-    elif options.codec == ".m4a":
+    elif options.codec == "aac":
         out_suffix = ".m4a"
     else:  # if options.codec == "mp3"
         out_suffix = ".mp3"
