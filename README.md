@@ -13,6 +13,11 @@ This tool has limited customizability. You can find more powerful solutions on g
 Except for quality parameters, flacmirror will not specify any other encoding parameters when calling
 the encoding tools. Therefore most encoding settings will depend on the encoding tools' defaults.
 
+## OS compatibility
+
+This tool was only tested on Linux but might work on Windows and macOS too. On Windows it is recommend
+that you use WSL to run flacmirror.
+
 ## Examples
 
 Convert and sync directory Music_FLAC/ to Music_OPUS/ while keeping the embedded artwork untouched.
