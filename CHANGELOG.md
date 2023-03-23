@@ -1,13 +1,10 @@
 # Changelog
 
-## v0.3.0a1 - 2023-03-20
+## v0.3.0 - 2023-03-23
 ### Added
 - MP3 support (using ffmpeg with libmp3lame as an encoder)
-
-## v0.3.0a0 - 2023-03-19
-### Added
 - AAC support (using fdkaac as an encoder)
-
+- New example section in readme
 
 ## v0.2.4 - 2022-09-08
 ### Changed
