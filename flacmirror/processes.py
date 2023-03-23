@@ -257,7 +257,6 @@ class Metaflac(Process):
             try:
                 tags.append((pair[0], pair[1]))
             except IndexError:
-                print(f"Multi-line comment in file {str(file)}: Workaround 2")
                 # Workaround 2
                 # No equal sign, maybe this is the next line of a multi-line tag
                 prev_key, prev_value = tags[-1]
@@ -269,7 +268,6 @@ class Metaflac(Process):
             # which means we can distinguish those \r\n from the unix Newlines \n that
             # come out of Metaflac.
             while line.endswith("\r\n"):
-                print(f"Multi-line comment in file {str(file)}: Workaround 1")
                 # This seems to be a multiline comment - consume next line too.
                 try:
                     line = next(line_iter)
