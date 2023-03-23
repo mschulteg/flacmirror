@@ -39,7 +39,7 @@ flacmirror Music_FLAC/ Music_MP3/ --codec mp3 --mp3-mode vbr --mp3-quality 0 --o
 Convert/sync and resize all embedded cover art wider than 500px to 500px width in the output files.
 
 ``` bash
-flacmirror Music_FLAC/ Music_OGG/ --codec vorbis --albumart resize --album-art-max-width 500
+flacmirror Music_FLAC/ Music_OGG/ --codec vorbis --albumart resize --albumart-max-width 500
 ```
 
 Convert/sync and discard embedded album art in output files. Also copy files with the name
@@ -53,7 +53,7 @@ Convert/sync using 4 threads (default number is the number of available threads 
 files with the `.jpg` extension to the output directory.
 
 ``` bash
-flacmirror Music_FLAC/ Music_AAC/ --codec aac --acc-mode 5 --copy-ext jpg --num-threads 4
+flacmirror Music_FLAC/ Music_M4A/ --codec aac --aac-mode 5 --copy-ext jpg --num-threads 4
 ```
 
 ## Dependencies
