@@ -8,11 +8,48 @@ to another directory while encoding the flac files to a specified format instead
 ## Information
 
 The supported target formats are vorbis, opus, mp3 (lame) and aac (LC profile).
-This is a small side project with limited customizability, you can find more powerful solutions
-on github like flac2all.
+This tool has limited customizability. You can find more powerful solutions on github like flac2all.
 
 Except for quality parameters, flacmirror will not specify any other encoding parameters when calling
 the encoding tools. Therefore most encoding settings will depend on the encoding tools' defaults.
+
+## Examples
+
+Convert and sync directory Music_FLAC/ to Music_OPUS/ while keeping the embedded artwork untouched.
+Only overwrite output files, if input files changed. Also specify the opus target bitrate to be
+96 kbit/s.
+
+``` bash
+flacmirror Music_FLAC/ Music_OPUS/ --codec opus --opus-quality 96 --albumart keep
+```
+
+Convert/sync directory Music_FLAC/ to Music_MP3/ and optimize embedded album art in the output
+files (default). Overwrite all output files (re-encode everything). Also delete files in the
+target directory, which are not in the input directory. The target mp3 files hould have VBR V0 quality.
+
+``` bash
+flacmirror Music_FLAC/ Music_MP3/ --codec mp3 --mp3-mode vbr --mp3-quality 0 --overwrite all --delete
+```
+
+Convert/sync and resize all embedded cover art wider than 500px to 500px width in the output files.
+
+``` bash
+flacmirror Music_FLAC/ Music_OGG/ --codec vorbis --albumart resize --album-art-max-width 500
+```
+
+Convert/sync and discard embedded album art in output files. Also copy files with the name
+`folder.jpg` and `cover.jpg` to the output directory.
+
+``` bash
+flacmirror Music_FLAC/ Music_OGG/ --codec vorbis --albumart discard --copy-file folder.jpg --copy-file cover.jpg
+```
+
+Convert/sync using 4 threads (default number is the number of available threads in the system). ALso copy
+files with the `.jpg` extension to the output directory.
+
+``` bash
+flacmirror Music_FLAC/ Music_AAC/ --codec aac --acc-mode 5 --copy-ext jpg --num-threads 4
+```
 
 ## Dependencies
 ### Python
@@ -126,7 +163,8 @@ optional arguments:
   --overwrite {all,none,old}                 Specify if or when existing files should be overwritten. 'all' means that
                                              files are always overwritten, 'none' means that files are never overwritten
                                              and 'old' means that files are only overwritten if the source file has
-                                             changed since (the source file's modification date is newer).
+                                             changed since (the source file's modification date is newer). Defaults to
+                                             'old'.
   --delete                                   Delete files that exist at the destination but not the source.
   --yes, -y                                  Skip any prompts that require you to press [y] (--delete)
   --copy-file COPY_FILE                      Copy additional files with filename COPY_FILE that are not being encoded.

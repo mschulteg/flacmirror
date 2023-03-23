@@ -136,6 +136,7 @@ def main():
             " files are always overwritten, 'none' means that files are never"
             " overwritten and 'old' means that files are only overwritten if the source"
             " file has changed since (the source file's modification date is newer)."
+            " Defaults to 'old'."
         ),
     )
     argparser.add_argument(
