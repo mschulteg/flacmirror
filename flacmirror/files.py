@@ -15,6 +15,7 @@ def get_all_files(
 ) -> List[Path]:
     # return one list with files to be converted and files to be copied interleaved
     matches = directory.rglob("*")
+    # is_file() is what makes this slow since it needs to check symlinks too
     files = [match for match in matches if match.is_file()]
     files_filtered: List[Path] = []
     for file in files:
