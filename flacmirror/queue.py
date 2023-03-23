@@ -81,7 +81,7 @@ def generate_jobs(options: Options) -> Tuple[List["Job"], List["JobDelete"]]:
     dst_files_set = set(bytes(dst_file) for dst_file in dst_files)
     for dst_file_found in dst_files_found:
         # If the found dst_file does not exist in the output list, delete it.
-        if not bytes(dst_file_found) in dst_files_set:
+        if bytes(dst_file_found) not in dst_files_set:
             jobs_delete.append(JobDelete(dst_file_found))
 
     return jobs, jobs_delete
