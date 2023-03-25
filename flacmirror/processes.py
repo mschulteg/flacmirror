@@ -126,6 +126,38 @@ class FFMPEG(Process):
         )
         return results.stdout
 
+    def resample_caf(
+        self,
+        input: bytes,
+        fs: int,
+    ) -> bytes:
+        args = [
+            self.executable,
+            "-loglevel",
+            self.loglevel,
+            "-nostdin",
+            "-fflags",
+            "+discardcorrupt",
+            "-i",
+            "pipe:",
+            "-af",
+            "aresample=resampler=soxr",
+            "-ar",
+            str(int(fs)),
+            "-f",
+            "caf",
+            "-",
+        ]
+        self.print_debug_info(args)
+        results = subprocess.run(
+            args,
+            input=input,
+            capture_output=True,
+            check=True,
+            start_new_session=True,
+        )
+        return results.stdout
+
     def encode_lame(
         self,
         input_f: Path,
@@ -434,7 +466,7 @@ class Flac(Process):
         super().__init__("flac", debug)
 
     def executable_info(self):
-        return 'Available as "fdkaac" on most distros'
+        return 'Available as "flac" on most distros'
 
     def decode_to_memory(self, input_f: Path) -> bytes:
         args = [
@@ -450,6 +482,10 @@ class Flac(Process):
             start_new_session=True,
         )
         return results.stdout
+
+
+class FdkaacUnsupportedSamplerateError(Exception):
+    pass
 
 
 class Fdkaac(Process):
@@ -487,13 +523,19 @@ class Fdkaac(Process):
             args.append("--tag-from-json")
             args.append(str(tags_file))
         self.print_debug_info(args)
-        subprocess.run(
-            args,
-            input=input,
-            capture_output=True,
-            check=True,
-            start_new_session=True,
-        )
+        try:
+            subprocess.run(
+                args,
+                input=input,
+                capture_output=True,
+                check=True,
+                start_new_session=True,
+            )
+        except subprocess.CalledProcessError as e:
+            if b"unsupported sample rate" in e.stderr:
+                raise FdkaacUnsupportedSamplerateError from None
+            else:
+                raise e from None
 
 
 class AtomicParsley(Process):

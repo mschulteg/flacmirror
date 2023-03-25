@@ -9,6 +9,7 @@ from .processes import (
     FFMPEG,
     AtomicParsley,
     Fdkaac,
+    FdkaacUnsupportedSamplerateError,
     ImageMagick,
     Metaflac,
     Oggenc,
@@ -108,8 +109,13 @@ def encode_flac_to_aac(input_f: Path, output_f: Path, options: Options):
     fdkaac = Fdkaac(options.aac_mode, options.aac_quality, options.debug)
     atomicparsley = AtomicParsley(options.debug)
 
-    wav_content = ffmpeg.encode_caf(input_f)
-    fdkaac.encode_from_mem(wav_content, output_f, None)
+    caf_content = ffmpeg.encode_caf(input_f)
+    try:
+        fdkaac.encode_from_mem(caf_content, output_f, None)
+    except FdkaacUnsupportedSamplerateError:
+        # if we have an unsupported samplerate, resample to 48000 kHz
+        caf_content = ffmpeg.resample_caf(caf_content, 48000)
+        fdkaac.encode_from_mem(caf_content, output_f, None)
 
     if options.albumart == "discard":
         return
