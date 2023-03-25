@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.1 - 2023-03-25
+### Fixed
+- Resample audio files if their samplerate is not supported by fdkaac.
+
 ## v0.3.0 - 2023-03-23
 ### Added
 - MP3 support (using ffmpeg with libmp3lame as an encoder)
